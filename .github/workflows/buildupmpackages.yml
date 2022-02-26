@@ -20,6 +20,15 @@ jobs:
     with:
       build-target: windows
 
+  # Validate output parameters from the Validate-Environment job
+  Check-Params-unityversion:
+    needs: validate-environment
+    uses: realitycollective/reusableworkflows/.github/workflows/testparams.yml
+    name: Test output from Validate
+    with:
+      build-target: windows
+      teststring: ${{ needs.validate-environment.outputs.unityversion }}
+
   # Check Unity Hub and Editor Environment
   Setup-Unity:
     name: Validate Unity Install
@@ -28,6 +37,24 @@ jobs:
     with:
       build-target: windows
       unityversion: ${{ needs.validate-environment.outputs.unityversion }}
+
+  # Validate unityeditorversion output parameter from the Setup-Unity job
+  Check-Params-editorversion:
+    needs: [Setup-Unity]
+    uses: realitycollective/reusableworkflows/.github/workflows/testparams.yml
+    name: Test editor version from Setup-Unity
+    with:
+      build-target: windows
+      teststring: ${{ needs.Setup-Unity.outputs.unityeditorversion }}
+
+  # Validate unityeditorinstalled output parameter from the Setup-Unity job
+  Check-Params-editorinstalled:
+    needs: [Setup-Unity]
+    uses: realitycollective/reusableworkflows/.github/workflows/testparams.yml
+    name: Test editor installed from Setup-Unity
+    with:
+      build-target: windows
+      teststring: ${{ needs.Setup-Unity.outputs.unityeditorinstalled }}
 
   Install-Unity-Editor:
     if: ${{ needs.Setup-Unity.outputs.unityeditorinstalled }}  == '1'
