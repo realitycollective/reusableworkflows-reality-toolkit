@@ -23,7 +23,7 @@ jobs:
   # Validate output parameters from the Validate-Environment job
   Check-Params-unityversion:
     needs: validate-environment
-    uses: realitycollective/reusableworkflows/.github/workflows/testparams.yml
+    uses: realitycollective/reusableworkflows/.github/workflows/testparams.yml@main
     name: Test output from Validate
     with:
       build-target: windows
@@ -41,7 +41,7 @@ jobs:
   # Validate unityeditorversion output parameter from the Setup-Unity job
   Check-Params-editorversion:
     needs: [Setup-Unity]
-    uses: realitycollective/reusableworkflows/.github/workflows/testparams.yml
+    uses: realitycollective/reusableworkflows/.github/workflows/testparams.yml@main
     name: Test editor version from Setup-Unity
     with:
       build-target: windows
@@ -50,7 +50,7 @@ jobs:
   # Validate unityeditorinstalled output parameter from the Setup-Unity job
   Check-Params-editorinstalled:
     needs: [Setup-Unity]
-    uses: realitycollective/reusableworkflows/.github/workflows/testparams.yml
+    uses: realitycollective/reusableworkflows/.github/workflows/testparams.yml@main
     name: Test editor installed from Setup-Unity
     with:
       build-target: windows
