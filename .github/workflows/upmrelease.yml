@@ -1,0 +1,42 @@
+name: Package UPM project and deploy
+
+on:
+  workflow_call:
+    inputs:
+      build-target:
+        required: true
+        type: string
+    secrets:
+      NPM_USER_EMAIL: 
+        required: true
+      NPM_USER_NAME: 
+        required: true            
+      NPM_TOKEN: 
+        required: true
+      NPM_REGISTRY: 
+        required: true
+
+jobs:
+  run_tests:
+    name: Package UPM Project and release
+    runs-on: ${{ inputs.build-target }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          clean: true
+      - uses: actions/setup-node@v2
+      - name: Bump UPM Package version
+        run: npm version prerelease -m "Auto increment pre-release version to %s [skip ci]" --force
+      - name: Create Pull Request
+        run: |
+          git config --global user.email "${{ secrets.NPM_USER_EMAIL }}"
+          git config --global user.name "${{ secrets.NPM_USER_NAME }}"
+          git commit -am "Automated report"
+          git push
+        shell: pwsh
+      - name: Publish package if newer
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          registry: ${{ secrets.NPM_REGISTRY }}

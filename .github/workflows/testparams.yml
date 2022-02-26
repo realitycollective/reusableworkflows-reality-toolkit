@@ -1,0 +1,34 @@
+name: Validate the Unity Build environment on server
+
+on:
+  workflow_call:
+    inputs:
+      build-target:
+        description: "Platform the job should run under"
+        required: true
+        type: string    
+      teststring:
+        description: "The string output to validate"
+        required: true
+        type: string
+jobs:
+  validate_unity_install:
+    name: Validate Unity Hub and Editor install required for Project
+    runs-on: ${{ inputs.build-target }}
+    steps:
+      - id: testInput
+        name: 'Test Input Params'
+        run: |
+          echo "::group::Testing input params"
+          $inputText = "${{ inputs.teststring }}"
+          if([string]::IsNullOrEmpty($inputText))
+          {
+            echo 'Input String was empty'
+            exit 1
+          }
+          else
+          {
+            echo "Input String is $inputText"
+            exit 0
+          }
+        shell: pwsh

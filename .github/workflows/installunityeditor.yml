@@ -1,0 +1,156 @@
+name: Install the required Unity Editor on server
+
+on:
+  workflow_call:
+    inputs:
+      build-target:
+        description: "Platform the job should run under"
+        required: true
+        type: string
+      unityversion:
+        description: "The version of Unity to validate"
+        required: true
+        type: string
+      modules:
+        description: 'The additional modules to install with the editor (i.e "webgl android lumin")'
+        type: string
+        required: false
+
+jobs:
+  validate_unity_install:
+    name: Validate Unity Hub and Editor install required for Project
+    runs-on: ${{ inputs.build-target }}
+    outputs:
+      unityversion: ${{ steps.validate.outputs.unityversion }}
+    steps:
+      - id: validate
+        name: 'Unity Project Validation'
+        run: |
+          echo "::group::Validating input"
+
+          $unityVersion = '${{ inputs.unityversion }}'
+
+          echo "Unity version is $unityVersion"
+          echo "::endgroup::"
+
+          echo "::group::Set Hub and editor locations"
+
+          ## Set Hub and editor locations
+          if ( (-not $global:PSVersionTable.Platform) -or ($global:PSVersionTable.Platform -eq "Win32NT") )
+          {
+            $hubPath = "C:\Program Files\Unity Hub\Unity Hub.exe"
+            $editorRootPath = "C:\Program Files\Unity\Hub\Editor\"
+            $editorFileEx = "\Editor\Unity.exe"
+            if ([string]::IsNullOrEmpty($modulesString)) 
+            {
+              $modules = @('windows-il2cpp', 'universal-windows-platform', 'lumin', 'webgl', 'android')
+            }
+            #"Unity Hub.exe" -- --headless help
+            #. 'C:\Program Files\Unity Hub\Unity Hub.exe' -- --headless help
+            function unity-hub {
+              $p = Start-Process -Verbose -NoNewWindow -PassThru -Wait -FilePath "$hubPath" -ArgumentList (@('--','--headless') + $args.Split(" "))
+            }
+          }
+          elseif ( $global:PSVersionTable.OS.Contains("Darwin") ) 
+          {
+            $hubPath = "/Applications/Unity Hub.app/Contents/MacOS/Unity Hub"
+            $editorRootPath = "/Applications/Unity/Hub/Editor/"
+            $editorFileEx = "/Unity.app/Contents/MacOS/Unity"
+            if ([string]::IsNullOrEmpty($modulesString)) 
+            {
+              $modules = @('mac-il2cpp', 'ios', 'lumin', 'webgl', 'android')
+            }
+            # /Applications/Unity\ Hub.app/Contents/MacOS/Unity\ Hub -- --headless help
+            function unity-hub {
+              $p = Start-Process -Verbose -NoNewWindow -PassThru -Wait -FilePath "$hubPath" -ArgumentList (@('--','--headless') + $args.Split(" "))
+            }
+          }
+          elseif ( $global:PSVersionTable.OS.Contains("Linux") ) 
+          {
+            $hubPath = "$HOME/Unity Hub/UnityHub.AppImage"
+            $editorRootPath = "$HOME/Unity/Hub/Editor/"
+            $editorFileEx = "/Editor/Unity"
+            if ([string]::IsNullOrEmpty($modulesString)) 
+            {
+              $modules = @('linux-il2cpp', 'webgl', 'android')
+            }
+            # /UnityHub.AppImage --headless help
+            # xvfb-run --auto-servernum "$HOME/Unity Hub/UnityHub.AppImage" --headless help
+            function unity-hub {
+              xvfb-run --auto-servernum "$hubPath" --headless $args.Split(" ")
+            }
+          }
+
+          if ( -not (Test-Path "$hubPath") ) {
+            Write-Error "$hubPath path not found!"
+            exit 1
+          }
+
+          echo "::endgroup::"
+
+          echo "::group::Checking Unity Editor Installation"              
+
+          $editorPath = "{0}{1}{2}" -f $editorRootPath,$unityVersion,$editorFileEx
+
+          if ( -not (Test-Path -Path $editorPath) ) 
+          {
+            function GetString($InputString, $InputPattern, $MatchIndex) {
+              $regExResult = $InputString | Select-String -Pattern $InputPattern
+              $regExResult.Matches[$MatchIndex].Value
+            }
+
+            function Get-unity-changeset
+            {
+              if ($unityVersion.Contains('a')) 
+              {
+                  $versionPageUrl = 'https://unity3d.com/unity/alpha/' + $unityVersion;
+              } elseif ($unityVersion.Contains('b')) {
+                  $versionPageUrl = 'https://unity3d.com/unity/beta/' + $unityVersion;
+              } elseif ($unityVersion.Contains('f')) {
+                  $urlSuffix = GetString -InputString $unityVersion -InputPattern '[.0-9]+' -MatchIndex 0;
+                  $versionPageUrl = 'https://unity3d.com/unity/whats-new/' + $urlSuffix;
+              }
+
+              $p = (New-Object System.Net.WebClient).DownloadString($versionPageUrl)
+              $unityChangeSetText = GetString -InputString $p -InputPattern 'Changeset:<\/span>[ \n]*([a-z0-9]{12})' -MatchIndex 0;
+              GetString -InputString $unityChangeSetText -InputPattern '[a-z0-9]{12}' -MatchIndex 0
+            }
+
+            $unityChangeSet = Get-unity-changeset
+            echo "Installing $unityVersion ($unityChangeSet)..."
+            $installArgs = @("install","--version $unityVersion","--changeset $unityChangeSet","--cm")
+
+            foreach ( $module in $modules ) {
+              $installArgs += '-m'
+              $installArgs += $module
+              echo "  with module: $module"
+            }
+            $installArgsString = $installArgs -join " "
+
+            unity-hub $installArgsString
+            
+            echo ""
+            if ( $global:PSVersionTable.OS.Contains("Linux") ) {
+              $installedEditors = & xvfb-run --auto-servernum "$hubPath" -- --headless editors -i | Out-String 
+            }
+            else {
+              $installedEditors = & $hubPath -- --headless editors -i | Out-String 
+            }
+            echo $installedEditors
+          }
+
+          if ( -not (Test-Path -Path $editorPath) ) 
+          {
+            Write-Error "Failed to validate installed editor path at $editorPath"
+            exit 1
+          }
+
+          echo ""
+          echo "UnityEditor path set to: $editorPath"
+          echo "::set-output name=editor-path::$editorPath"
+          echo "::set-output name=unityversion::$unityVersion"
+          echo "::endgroup::"
+
+          exit 0
+        shell: pwsh
+        
