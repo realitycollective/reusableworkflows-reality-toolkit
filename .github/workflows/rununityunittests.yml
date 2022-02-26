@@ -209,21 +209,41 @@ jobs:
           }
           echo "Log Directory: $logDirectory"
           $date = Get-Date -Format "yyyyMMddTHHmmss"
-          $logName = "$logDirectory/${GITHUB_REF_NAME}-$date"
+
+          # If run manually, the Refname is actually blank, so just use date
+          if([string]::IsNullOrEmpty(${GITHUB_REF_NAME})) {
+            $logName = "$logDirectory/$date"
+          }
+          else{          
+            $logName = "$logDirectory/${GITHUB_REF_NAME}-$date"
+          }
+
           $logPath = "$logName.log"
           $testsLogPath = "$logName-tests.xml"
 
           # Start Testing
           unity-editor -runEditorTests -projectPath $TempUnityProjectName -logfile $logPath -editorTestsResultFile $testsLogPath -buildTarget ${{ matrix.build-target }}
+          if($LASTEXITCODE -ne '0'){
+          echo "::group::Unity Unit tests errors"
+            $exitCode = $testResult.ExitCode
+            Get-Content $logPath
+            echo "Build failed due to errors ($LASTEXITCODE), please check the log at $logPath"
+          echo "::endgroup::"
 
+            exit $LASTEXITCODE
+          }
           echo "::endgroup::"
 
           echo "::group::Unity Unit tests Results"
-
-          echo "Test Run results for ${GITHUB_REPOSITORY} Branch ${GITHUB_REF}"
-          echo ""
-          Select-Xml -Path $testsLogPath -XPath '/test-run/test-suite' | ForEach-Object { "Name: " +$_.Node.name, ", Result: " + $_.Node.result, ", Total Tests: " + $_.Node.total, ", Passed: " + $_.Node.passed, ", Failed: " + $_.Node.failed, ", Skipped: " + $_.Node.skipped }
-
+          if (Test-Path '$testsLogPath') {
+            echo "Test Run results for ${GITHUB_REPOSITORY} Branch ${GITHUB_REF}"
+            echo ""
+            Select-Xml -Path $testsLogPath -XPath '/test-run/test-suite' | ForEach-Object { "Name: " +$_.Node.name, ", Result: " + $_.Node.result, ", Total Tests: " + $_.Node.total, ", Passed: " + $_.Node.passed, ", Failed: " + $_.Node.failed, ", Skipped: " + $_.Node.skipped }
+          }
+          else {
+            echo "No test results found for ${GITHUB_REPOSITORY} Branch ${GITHUB_REF} at $testsLogPath"
+            echo ""
+          }
           echo "::endgroup::"
 
         shell: pwsh
