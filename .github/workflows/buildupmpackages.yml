@@ -32,7 +32,7 @@ jobs:
   Install-Unity-Editor:
     if: ${{ needs.Setup-Unity.outputs.unityeditorinstalled }}  == '1'
     needs: [Check-Params-editorversion, Check-Params-editorinstalled, Setup-Unity]
-    uses: realitycollective/reusableworkflows/.github/workflows/installunityeditor.yml
+    uses: realitycollective/reusableworkflows/.github/workflows/installunityeditor.yml@main
     name: Install Unity Editor
     with:
       build-target: windows
