@@ -82,7 +82,7 @@ jobs:
           }
 
           if ( -not (Test-Path "$hubPath") ) {
-            Write-Error "$hubPath path not found!"
+            echo "$hubPath path not found!"
             exit 1
           }
 
@@ -92,8 +92,16 @@ jobs:
 
           $editorPath = "{0}{1}{2}" -f $editorRootPath,$unityVersion,$editorFileEx
 
-          if ( -not (Test-Path -Path $editorPath) ) 
-          {
+          if (Test-Path -Path $editorPath){
+            echo "Editor already installed, exiting..."
+            echo ""
+            echo "UnityEditor path set to: $editorPath"
+            echo "::set-output name=editor-path::$editorPath"
+            echo "::set-output name=unityversion::$unityVersion"            
+            echo "::endgroup::"
+            exit 0
+          } 
+          else {
             function GetString($InputString, $InputPattern, $MatchIndex) {
               $regExResult = $InputString | Select-String -Pattern $InputPattern
               $regExResult.Matches[$MatchIndex].Value

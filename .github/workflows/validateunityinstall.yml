@@ -169,6 +169,8 @@ jobs:
 
           echo ""
           echo "UnityEditor path set to: $editorPath"
+          echo ""
+          echo "Editor install result was $installedResult"
           echo "::set-output name=unityversion::$unityVersion"
           echo "::set-output name=editorinstalled::$installedResult"
           echo "::endgroup::"
