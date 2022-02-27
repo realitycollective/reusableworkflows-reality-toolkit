@@ -141,7 +141,8 @@ jobs:
           {
             echo 'Short version of Version provided, finding latest full unity version number'
             $InstalledUnityVersions = unity-hub editors -r
-            $unityVersion = GetString $InstalledUnityVersions "$unityVersion.{4,5}" -MatchIndex 0
+            $unityVersion = GetString $InstalledUnityVersions "$unityVersion.{4,7}" -MatchIndex 0
+            $unityVersion = $unityVersion.Trim(","," ").Trim()
             echo "Long Unity version is $unityVersion"
           }
 
