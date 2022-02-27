@@ -51,6 +51,12 @@ jobs:
           $package_json = Get-Content -Path $versionFile | ConvertFrom-Json
           $unityVersion = $package_json.unity
 
+          if($unityVersion.Length -lt 6) {
+            echo "Error - Detected version is $unityVersion"
+            echo "Unity version is too short, please check your UPM package Unity setting"
+            exit 1
+          }
+
           echo "Detected version is $unityVersion"
           echo "::set-output name=upmunityversion::$unityVersion"
           echo "::endgroup::"
