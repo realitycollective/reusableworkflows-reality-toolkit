@@ -150,6 +150,7 @@ jobs:
               exit 1
             }
 
+            foreach
             # Read dependancy input values as json
             $JSONdependencies = $dependencies | ConvertFrom-Json
 
@@ -160,45 +161,46 @@ jobs:
             $strArray = $projectManifest.dependencies.PsObject.Properties | ForEach-Object {"$($_.Name)@$($_.Value),"}
 
             # Loop through new dependancies and add them to the project Manifest
-            $JSONdependencies.PsObject.Properties | ForEach-Object -Process { 
-              $dependencyName = $_.Name
-              $dependencyURL = $_.Value
-              $cloneURL = "https://${{ secrets.GIT_USER_NAME }}:${{ secrets.GIT_PAT }}@$dependencyURL"
+            foreach($dependency in $JSONdependencies){
+              $dependency.PsObject.Properties | ForEach-Object -Process { 
+                $dependencyName = $_.Name
+                $dependencyURL = $_.Value
+                $cloneURL = "https://${{ secrets.GIT_USER_NAME }}:${{ secrets.GIT_PAT }}@$dependencyURL"
 
-              echo "cloning $dependencyName from $dependencyURL and moving to $destinationPath"
-              echo "git path - $cloneURL"
+                echo "cloning $dependencyName from $dependencyURL and moving to $destinationPath"
+                echo "git path - $cloneURL"
 
-              # Clone Dependancy repo to destination folder
-              git clone -b $dependencyName --single-branch $cloneURL $dependencyName
+                # Clone Dependancy repo to destination folder
+                git clone -b $dependencyName --single-branch $cloneURL $dependencyName
 
-              if( -not (Test-Path -Path "$dependencyName")){
-                echo "Unable to clone $dependencyName from $dependencyURL"
-                exit 1
+                if( -not (Test-Path -Path "$dependencyName")){
+                  echo "Unable to clone $dependencyName from $dependencyURL"
+                  exit 1
+                }
+
+                # Move files from clone path into packages folder, if the dependency contains a UPM package then move the entire folder and not just its contents
+                if (Test-Path -Path "$dependencyName/package.json") {
+                  echo "Moving whole $dependencyName UPM package to $destinationPath"
+                  Move-Item -Path "$dependencyName" -Destination $destinationPath
+                }
+                else {
+                  echo "Moving the contents of $dependencyName into the $destinationPath folder"
+                  Move-Item -Path "$dependencyName/*" -Destination $destinationPath
+                }
+
+                # Get Dependency manifest entries (if applicable)
+                if (Test-Path -Path "$destinationPath/$dependencyName.json") {
+                    $dependencyManifest = Get-Content -Path "$destinationPath/$dependencyName.json" | ConvertFrom-Json
+                    $dependencyManifest.dependencies.PsObject.Properties | ForEach-Object {
+                        $strArray += "$($_.Name)@$($_.Value),"
+                    }
+                }
+                else{
+                  echo "No denendency json found called $destinationPath/$dependencyName.json, skipping adding additional manifest entries"
+                }
               }
-
-              # Move files from clone path into packages folder, if the dependency contains a UPM package then move the entire folder and not just its contents
-              if (Test-Path -Path "$dependencyName/package.json") {
-                echo "Moving whole $dependencyName UPM package to $destinationPath"
-                Move-Item -Path "$dependencyName" -Destination $destinationPath
-              }
-              else {
-                echo "Moving the contents of $dependencyName into the $destinationPath folder"
-                Move-Item -Path "$dependencyName/*" -Destination $destinationPath
-              }
-
-              # Get Dependency manifest entries (if applicable)
-              if (Test-Path -Path "$destinationPath/$dependencyName.json") {
-                  $dependencyManifest = Get-Content -Path "$destinationPath/$dependencyName.json" | ConvertFrom-Json
-                  $dependencyManifest.dependencies.PsObject.Properties | ForEach-Object {
-                      $strArray += "$($_.Name)@$($_.Value),"
-                  }
-              }
-              else{
-                echo "No denendency json found called $destinationPath/$dependencyName.json, skipping adding additional manifest entries"
-              }
-
             }
-
+            
             # Reformat combined dependancies list
             $strArray = $strArray.Trim(",") | ConvertTo-Json 
             $strArray = $strArray.Replace("@",'":"').Replace("[","{").Replace("]","}")
