@@ -163,11 +163,13 @@ jobs:
             $JSONdependencies.PsObject.Properties | ForEach-Object -Process { 
               $dependencyName = $_.Name
               $dependencyURL = $_.Value
+              $cloneURL = "https://${{ secrets.GIT_USER_NAME }}:${{ secrets.GIT_PAT }}@$dependencyURL"
 
               echo "cloning $dependencyName from $dependencyURL and moving to $destinationPath"
+              echo "git path - $cloneURL"
 
               # Clone Dependancy repo to destination folder
-              git clone -b $dependencyName --single-branch "https://${{ secrets.GIT_USER_NAME }}:${{ secrets.GIT_PAT }}@$dependencyURL" $dependencyName
+              git clone -b $dependencyName --single-branch $cloneURL $dependencyName
 
               if( -not (Test-Path -Path "$dependencyName")){
                 echo "Unable to clone $dependencyName from $dependencyURL"
