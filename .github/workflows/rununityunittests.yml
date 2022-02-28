@@ -143,6 +143,13 @@ jobs:
             # Read dependancy input value
             $dependencies = '${{ inputs.dependencies }}'
 
+            if([string]::IsNullOrEmpty('${{ secrets.GIT_USER_NAME }}') -or [string]::IsNullOrEmpty('${{ secrets.GIT_PAT }}')){
+              echo ""
+              echo "Secrets for GIT_USER_NAME or GIT_PAT missing, please register them with access to this runner"
+              echo "*Note, Organisation secrets are not accessible to Forked repos and need registering in the local fork"
+              exit 1
+            }
+
             # Read dependancy input values as json
             $JSONdependencies = $dependencies | ConvertFrom-Json
 
