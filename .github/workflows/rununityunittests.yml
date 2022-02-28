@@ -150,7 +150,6 @@ jobs:
               exit 1
             }
 
-            foreach
             # Read dependancy input values as json
             $JSONdependencies = $dependencies | ConvertFrom-Json
 
