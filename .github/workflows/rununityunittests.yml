@@ -179,8 +179,11 @@ jobs:
 
                 # Move files from clone path into packages folder, if the dependency contains a UPM package then move the entire folder and not just its contents
                 if (Test-Path -Path "$dependencyName/package.json") {
-                  echo "Moving whole $dependencyName UPM package to $destinationPath"
-                  Move-Item -Path "$dependencyName" -Destination $destinationPath
+                  $package_json = Get-Content -Path $dependencyName/package.json | ConvertFrom-Json
+                  $packageName = $package_json.name
+                  Rename-Item $dependencyName $packageName
+                  echo "Moving whole $packageName UPM package to $destinationPath"
+                  Move-Item -Path "$packageName" -Destination $destinationPath
                 }
                 else {
                   echo "Moving the contents of $dependencyName into the $destinationPath folder"
