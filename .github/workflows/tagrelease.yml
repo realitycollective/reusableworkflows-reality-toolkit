@@ -29,9 +29,9 @@ jobs:
           echo "::set-output name=packageversion::$result"
       - name: Create Pull Request
         run: |
-          git config --global user.email "${{ secrets.NPM_USER_EMAIL }}"
-          git config --global user.name "${{ secrets.NPM_USER_NAME }}"
-          git commit -am "Automated report"
+          git config --global user.email "${GITHUB_ACTOR}"
+          git config --global user.name "${GITHUB_ACTOR}@users.noreply.github.com"
+          git commit -am "Version release and up version"
           git push
         shell: pwsh
       - name: Create Tag Release
