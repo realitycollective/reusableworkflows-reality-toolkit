@@ -10,6 +10,9 @@ on:
       packageversion:
         description: "Returns the version of Unity the UPM package requires"
         value: ${{ jobs.packageRelease.outputs.packageversion }}
+    secrets:
+      GIT_USER_NAME: 
+        required: false           
 jobs:
   packageRelease:
     name: Package UPM Project and tag
@@ -24,9 +27,20 @@ jobs:
       - uses: actions/setup-node@v2
       - name: Set Github vars
         run: |
-          echo "email ${GITHUB_ACTOR}@users.noreply.github.com"
-          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-          git config --global user.name "${GITHUB_ACTOR}"
+          if([string]::IsNullOrEmpty('${{ secrets.GIT_USER_NAME }}')){
+            if([string]::IsNullOrEmpty('${{ secrets.GIT_USER_NAME }}')){
+              $gitUser = "BuildBot"
+            }
+            else {
+              $gitUser = ${GITHUB_ACTOR}
+            }
+          }
+          else {
+            $gitUser = ${{ secrets.GIT_USER_NAME }}
+          }
+          echo "email $gitUser@users.noreply.github.com"
+          git config --global user.email "$gitUser@users.noreply.github.com"
+          git config --global user.name "$gitUser"
         shell: pwsh
       - id: getpackageversion
         name: Bump UPM Package version
