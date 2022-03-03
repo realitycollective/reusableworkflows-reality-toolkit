@@ -32,11 +32,11 @@ jobs:
               $gitUser = "BuildBot"
             }
             else {
-              $gitUser = ${GITHUB_ACTOR}
+              $gitUser = "${GITHUB_ACTOR}"
             }
           }
           else {
-            $gitUser = ${{ secrets.GIT_USER_NAME }}
+            $gitUser = "${{ secrets.GIT_USER_NAME }}"
           }
           echo "email $gitUser@users.noreply.github.com"
           git config --global user.email "$gitUser@users.noreply.github.com"
