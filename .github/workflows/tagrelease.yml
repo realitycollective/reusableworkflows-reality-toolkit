@@ -12,7 +12,10 @@ on:
         value: ${{ jobs.packageRelease.outputs.packageversion }}
     secrets:
       GIT_USER_NAME: 
-        required: false           
+        required: false
+      GIT_PAT: 
+        required: false
+
 jobs:
   packageRelease:
     name: Package UPM Project and tag
@@ -54,5 +57,7 @@ jobs:
       - name: Create Tag Release
         run: |
           git tag -fa "${{ steps.getpackageversion.outputs.packageversion }}" "${GITHUB_SHA}" -m "${{ steps.getpackageversion.outputs.packageversion }}"
-          git push origin "${{ steps.getpackageversion.outputs.packageversion }}"
+          #git push origin "${{ steps.getpackageversion.outputs.packageversion }}"
+          git push https://${{ secrets.GIT_USER_NAME }}:${{ secrets.GIT_PAT }}@github.com/${{ github.repository }}.git origin '${{ steps.getpackageversion.outputs.packageversion }}' --force
+
         shell: pwsh
