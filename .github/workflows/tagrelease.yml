@@ -51,11 +51,6 @@ jobs:
           $result = npm version prerelease -m "Auto increment pre-release version to %s [skip ci]" --force
           echo "::set-output name=packageversion::$result"
         shell: pwsh
-      - name: Create Pull Request
-        run: |
-          git commit -am "Version release and up version"
-          git push
-        shell: pwsh
       - name: Create Tag Release
         run: |
           git tag -fa "${{ steps.getpackageversion.outputs.packageversion }}" "${GITHUB_SHA}" -m "${{ steps.getpackageversion.outputs.packageversion }}"
