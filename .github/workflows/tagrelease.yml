@@ -22,22 +22,25 @@ jobs:
           submodules: recursive
           clean: true
       - uses: actions/setup-node@v2
+      - name: Set Github vars
+        run: |
+          echo "email ${GITHUB_ACTOR}@users.noreply.github.com"
+          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git config --global user.name "${GITHUB_ACTOR}"
+        shell: pwsh
       - id: getpackageversion
         name: Bump UPM Package version
         run: |
           $result = npm version prerelease -m "Auto increment pre-release version to %s [skip ci]" --force
           echo "::set-output name=packageversion::$result"
+        shell: pwsh
       - name: Create Pull Request
         run: |
-          echo "email ${GITHUB_ACTOR}@users.noreply.github.com"
-          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-          git config --global user.name "${GITHUB_ACTOR}"
           git commit -am "Version release and up version"
           git push
         shell: pwsh
       - name: Create Tag Release
         run: |
-          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-          git config --global user.name "${GITHUB_ACTOR}"        
           git tag -fa "${{ steps.getpackageversion.outputs.packageversion }}" "${GITHUB_SHA}" -m "${{ steps.getpackageversion.outputs.packageversion }}"
           git push origin "${{ steps.getpackageversion.outputs.packageversion }}"
+        shell: pwsh
