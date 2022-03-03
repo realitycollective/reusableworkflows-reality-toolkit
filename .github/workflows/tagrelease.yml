@@ -29,14 +29,17 @@ jobs:
         run: |
           if([string]::IsNullOrEmpty('${{ secrets.GIT_USER_NAME }}')){
             if([string]::IsNullOrEmpty('${{ secrets.GIT_USER_NAME }}')){
-              $gitUser = "BuildBot"
+              $gitUser = "action"
+              $gitEmail = "action@github.com"
             }
             else {
               $gitUser = "${GITHUB_ACTOR}"
+              $gitEmail = "$gitUser@users.noreply.github.com"
             }
           }
           else {
             $gitUser = "${{ secrets.GIT_USER_NAME }}"
+            $gitEmail = "$gitUser@users.noreply.github.com"
           }
           echo "email $gitUser@users.noreply.github.com"
           git config --global user.email "$gitUser@users.noreply.github.com"
