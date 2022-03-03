@@ -29,6 +29,7 @@ jobs:
           echo "::set-output name=packageversion::$result"
       - name: Create Pull Request
         run: |
+          echo "email ${GITHUB_ACTOR}@users.noreply.github.com"
           git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
           git config --global user.name "${GITHUB_ACTOR}"
           git commit -am "Version release and up version"
