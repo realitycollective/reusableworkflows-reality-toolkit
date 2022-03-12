@@ -51,10 +51,10 @@ jobs:
         run: |
           $result = npm version prerelease -m "Auto increment pre-release version to %s [skip ci]" --force
           echo "::set-output name=packageversion::$result"
+          git push origin "${{ steps.getpackageversion.outputs.packageversion }}"
         shell: pwsh
       - name: Create Tag Release
         run: |
           git tag -fa "${{ steps.getpackageversion.outputs.packageversion }}" "${GITHUB_SHA}" -m "${{ steps.getpackageversion.outputs.packageversion }}"
           git push origin "${{ steps.getpackageversion.outputs.packageversion }}"
-
         shell: pwsh
