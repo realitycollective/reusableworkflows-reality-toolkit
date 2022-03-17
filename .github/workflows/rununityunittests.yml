@@ -94,7 +94,7 @@ jobs:
 
           echo "::group::Grouping Package in a UPM folder"
 
-          $UPMFolderName = 'upm'
+          $UPMFolderName = 'u'
 
           if ( -not (Test-Path '$UPMFolderName') ) 
           {
@@ -107,7 +107,7 @@ jobs:
 
           echo "::group::Creating Temp Unity project"
 
-          $TempUnityProjectName = 'TestUnityProject'
+          $TempUnityProjectName = 'P'
 
           unity-editor '-createProject' $TempUnityProjectName -quit
 
