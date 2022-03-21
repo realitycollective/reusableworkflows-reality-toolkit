@@ -50,6 +50,10 @@ jobs:
         name: Bump UPM Package version
         run: |
           $result = npm version prerelease -m "Auto increment pre-release version to %s [skip ci]" --force
+          if([string]::IsNullOrEmpty($result)) {
+            echo "NPM Version patch failed"
+            exit 1
+          }          
           echo "::set-output name=packageversion::$result"
           git push origin "${{ steps.getpackageversion.outputs.packageversion }}"
         shell: pwsh
