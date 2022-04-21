@@ -130,7 +130,8 @@ jobs:
           # 
           # !!Does NOT support additional scoped registries at this time!
 
-          # Read dependancy input value
+          echo "---------------------------------------------"
+          echo "Read dependancy input value"
           if([string]::IsNullOrEmpty('${{ inputs.dependencies }}'))
           {
             echo "No dependencies provided"
@@ -150,7 +151,8 @@ jobs:
               exit 1
             }
 
-            # Read dependancy input values as json
+            echo "---------------------------------------------"
+            echo "Read dependancy input values as json"
             $JSONdependencies = $dependencies | ConvertFrom-Json
 
             echo $JSONdependencies
@@ -159,35 +161,39 @@ jobs:
             $projectManifest = Get-Content -Path "$destinationPath/manifest.json" | ConvertFrom-Json
             $strArray = $projectManifest.dependencies.PsObject.Properties | ForEach-Object {"$($_.Name)@$($_.Value),"}
 
-            # Loop through new dependancies and add them to the project Manifest
+            echo "---------------------------------------------"
+            echo "Loop through new dependancies and add them to the project Manifest"
             foreach($dependency in $JSONdependencies){
               $dependency.PsObject.Properties | ForEach-Object -Process { 
                 $dependencyName = $_.Name
+                $dependencyPath = $dependencyName.Replace("/","_")
                 $dependencyURL = $_.Value
+                echo "---------------------------------------------"
+                echo "Cloning dependency - Name [$dependencyName] - Path [$dependencyPath] - URL [$dependencyURL]"
                 $cloneURL = "https://${{ secrets.GIT_USER_NAME }}:${{ secrets.GIT_PAT }}@$dependencyURL"
 
                 echo "cloning $dependencyName from $dependencyURL and moving to $destinationPath"
                 echo "git path - $cloneURL"
 
                 # Clone Dependancy repo to destination folder
-                git clone -b $dependencyName --single-branch $cloneURL $dependencyName
+                git clone -b $dependencyName --single-branch $cloneURL $dependencyPath
 
-                if( -not (Test-Path -Path "$dependencyName")){
+                if( -not (Test-Path -Path "$dependencyPath")){
                   echo "Unable to clone $dependencyName from $dependencyURL"
                   exit 1
                 }
 
                 # Move files from clone path into packages folder, if the dependency contains a UPM package then move the entire folder and not just its contents
-                if (Test-Path -Path "$dependencyName/package.json") {
-                  $package_json = Get-Content -Path $dependencyName/package.json | ConvertFrom-Json
+                if (Test-Path -Path "$dependencyPath/package.json") {
+                  $package_json = Get-Content -Path $dependencyPath/package.json | ConvertFrom-Json
                   $packageName = $package_json.name
-                  Rename-Item $dependencyName $packageName
+                  Rename-Item $dependencyPath $packageName
                   echo "Moving whole $packageName UPM package to $destinationPath"
                   Move-Item -Path "$packageName" -Destination $destinationPath
                 }
                 else {
                   echo "Moving the contents of $dependencyName into the $destinationPath folder"
-                  Move-Item -Path "$dependencyName/*" -Destination $destinationPath
+                  Move-Item -Path "$dependencyPath/*" -Destination $destinationPath
                 }
 
                 # Get Dependency manifest entries (if applicable)
@@ -202,7 +208,8 @@ jobs:
                 }
               }
             }
-            
+            echo "---------------------------------------------"
+           
             # Reformat combined dependancies list
             $strArray = $strArray.Trim(",") | ConvertTo-Json 
             $strArray = $strArray.Replace("@",'":"').Replace("[","{").Replace("]","}")
@@ -240,7 +247,8 @@ jobs:
           $logPath = "$logName.log"
           $testsLogPath = "$logName-tests.xml"
 
-          # Start Testing
+          echo "---------------------------------------------"
+          echo "Start Testing"
           unity-editor -runEditorTests -projectPath $TempUnityProjectName -logfile $logPath -editorTestsResultFile $testsLogPath -buildTarget ${{ matrix.build-target }}
           if($LASTEXITCODE -ne '0'){
           echo "::group::Unity Unit tests errors"
@@ -253,6 +261,7 @@ jobs:
           }
           echo "::endgroup::"
 
+          echo "---------------------------------------------"
           echo "::group::Unity Unit tests Results"
           if (Test-Path '$testsLogPath') {
             echo "Test Run results for ${GITHUB_REPOSITORY} Branch ${GITHUB_REF}"
