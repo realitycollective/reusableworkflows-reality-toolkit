@@ -19,11 +19,17 @@ on:
         required: false            
       GIT_PAT: 
         required: false
+    outputs:
+      unityversion:
+        description: "Returns the version of Unity the UPM package requires"
+        value: ${{ jobs.run_tests.outputs.unityprojectpath }}
 
 jobs:
   run_tests:
     name: Run Unity Unit Tests
     runs-on: ${{ matrix.os }}
+    outputs:
+      unityprojectpath: ${{ steps.validate.outputs.unityprojectpath }}    
     strategy:
       matrix:
         include:
@@ -33,7 +39,7 @@ jobs:
             build-target: StandaloneWindows64
           - os: windows
             build-target: WSAPlayer
-
+        
     steps:
       - uses: actions/checkout@v2
         with:
@@ -43,6 +49,13 @@ jobs:
       - id: validate
         name: 'Run Unity Unit tests'
         run: |
+          echo "::group::Script Versioning"
+            $scriptVersion = '1.0.0'
+
+            echo 'Build Script Version'
+            echo $scriptVersion
+          echo "::endgroup::"
+
           echo "::group::Warm up for Unity version"
 
           echo 'Unity version is ${{ inputs.unityversion }}'
@@ -55,6 +68,7 @@ jobs:
           }
 
           if ( (-not $global:PSVersionTable.Platform) -or ($global:PSVersionTable.Platform -eq "Win32NT") ) {
+            $directorySeparatorChar = "\"
             $editorRootPath = "C:/Program Files/Unity/Hub/Editor/"
             $editorFileEx = "/Editor/Unity.exe"
             $editorrunpath = $editorRootPath + $unityVersion + $editorFileEx
@@ -65,6 +79,7 @@ jobs:
             }
           }
           elseif ( $global:PSVersionTable.OS.Contains("Darwin") ) {
+            $directorySeparatorChar = "/"
             $editorRootPath = "/Applications/Unity/Hub/Editor/"
             $editorFileEx = "/Unity.app/Contents/MacOS/Unity"
             $editorrunpath = '$editorRootPath' + '$unityVersion' + '$editorFileEx'
@@ -75,6 +90,7 @@ jobs:
             }
           }
           elseif ( $global:PSVersionTable.OS.Contains("Linux") ) {
+            $directorySeparatorChar = "/"
             $editorRootPath = "$HOME/Unity/Hub/Editor/"
             $editorFileEx = "/Editor/Unity"
             $editorrunpath = '$editorRootPath' + '$unityVersion' + '$editorFileEx'
@@ -111,7 +127,7 @@ jobs:
 
           unity-editor '-createProject' $TempUnityProjectName -quit
 
-          $destinationPath = $TempUnityProjectName + '/packages'
+          $destinationPath = $TempUnityProjectName + $directorySeparatorChar + 'packages'
           Move-Item -Path $UPMFolderName -Destination $destinationPath
 
           echo "::endgroup::"
@@ -158,7 +174,8 @@ jobs:
             echo $JSONdependencies
 
             # Read current Manifest json
-            $projectManifest = Get-Content -Path "$destinationPath/manifest.json" | ConvertFrom-Json
+            $manifestPath = $destinationPath + $directorySeparatorChar + 'manifest.json'
+            $projectManifest = Get-Content -Path $manifestPath | ConvertFrom-Json
             $strArray = $projectManifest.dependencies.PsObject.Properties | ForEach-Object {"$($_.Name)@$($_.Value),"}
 
             echo "---------------------------------------------"
@@ -229,27 +246,53 @@ jobs:
           echo "::group::Setup logging and run Unit tests"          
 
           # Log detail
-          $logDirectory = "$TempUnityProjectName/Builds/Logs"
-          if ( -not (Test-Path -Path $logDirectory)) {
-            $logDirectory = New-Item -ItemType Directory -Force -Path $logDirectory | Select-Object
+          $logDirectory = "Logs"
+          if (Test-Path -Path $logDirectory) {
+            echo "Clearing logs from a previous run"
+            Remove-item $logDirectory -recurse
           }
+
+          $logDirectory = New-Item -ItemType Directory -Force -Path $logDirectory | Select-Object
+
           echo "Log Directory: $logDirectory"
           $date = Get-Date -Format "yyyyMMddTHHmmss"
 
           # If run manually, the Refname is actually blank, so just use date
           if([string]::IsNullOrEmpty(${GITHUB_REF_NAME})) {
-            $logName = "$logDirectory/$date"
+            $logName = "$logDirectory$directorySeparatorChar$date"
           }
           else{          
-            $logName = "$logDirectory/${GITHUB_REF_NAME}-$date"
+            $logName = "$logDirectory$directorySeparatorChar${GITHUB_REF_NAME}-$date"
           }
 
           $logPath = "$logName.log"
           $testsLogPath = "$logName-tests.xml"
 
+          echo "Logpath [$logPath]"
+          echo "TestsPath [$testsLogPath]"
+
           echo "---------------------------------------------"
           echo "Start Testing"
+          echo "Unity Command\n[unity-editor -runEditorTests -projectPath $TempUnityProjectName -logfile $logPath -editorTestsResultFile $testsLogPath -buildTarget ${{ matrix.build-target }}]"
+
           unity-editor -runEditorTests -projectPath $TempUnityProjectName -logfile $logPath -editorTestsResultFile $testsLogPath -buildTarget ${{ matrix.build-target }}
+
+          echo "---------------------------------------------"
+          echo "::group::Unity Unit tests Results"
+          if (Test-Path $testsLogPath) {
+            echo "Test Run results for ${GITHUB_REPOSITORY} Branch ${GITHUB_REF}"
+            echo ""
+            Select-Xml -Path $testsLogPath -XPath '/test-run/test-suite' | ForEach-Object { "Name: " +$_.Node.name, ", Result: " + $_.Node.result, ", Total Tests: " + $_.Node.total, ", Passed: " + $_.Node.passed, ", Failed: " + $_.Node.failed, ", Skipped: " + $_.Node.skipped }
+          }
+          else {
+            echo "No test results found for ${GITHUB_REPOSITORY} Branch ${GITHUB_REF} at $testsLogPath"
+            echo ""
+          }
+
+          echo "Unity Project path $TempUnityProjectName"
+          echo "::set-output name=unityprojectpath::$TempUnityProjectName"          
+          echo "::endgroup::"
+
           if($LASTEXITCODE -ne '0'){
           echo "::group::Unity Unit tests errors"
             $exitCode = $testResult.ExitCode
@@ -261,17 +304,33 @@ jobs:
           }
           echo "::endgroup::"
 
+          echo "::group::Run build"              
+
           echo "---------------------------------------------"
-          echo "::group::Unity Unit tests Results"
-          if (Test-Path '$testsLogPath') {
-            echo "Test Run results for ${GITHUB_REPOSITORY} Branch ${GITHUB_REF}"
-            echo ""
-            Select-Xml -Path $testsLogPath -XPath '/test-run/test-suite' | ForEach-Object { "Name: " +$_.Node.name, ", Result: " + $_.Node.result, ", Total Tests: " + $_.Node.total, ", Passed: " + $_.Node.passed, ", Failed: " + $_.Node.failed, ", Skipped: " + $_.Node.skipped }
+          echo "Start Building"
+          if (Test-Path "$destinationPath/com.realitytoolkit.buildtools") 
+          {
+            if ( -not (Test-Path "$editorrunpath") ) {
+              New-Item 'builds' -ItemType Directory
+            }
+            $buildTarget = "${{ matrix.build-target }}"
+            $buildPath = 'builds' + $directorySeparatorChar + $buildTarget;
+            $buildMethod = 'RealityToolkit.BuildTools.Editor.BuildCommand.Build';
+
+            echo "Unity Command\n[unity-editor -projectPath $TempUnityProjectName -logfile $logPath -nographics -quit -buildTarget $buildTarget -executeMethod $buildMethod -buildPath $buildPath]"
+
+            unity-editor -projectPath $TempUnityProjectName -logfile $logPath -nographics -quit -buildTarget $buildTarget -executeMethod $buildMethod -buildPath $buildPath
           }
           else {
-            echo "No test results found for ${GITHUB_REPOSITORY} Branch ${GITHUB_REF} at $testsLogPath"
-            echo ""
+            echo "Build tools not found, have you included com.realitytoolkit.buildtools in the build depenendencies?"
+            exit $LASTEXITCODE
           }
+          echo "---------------------------------------------"          
           echo "::endgroup::"
 
         shell: pwsh
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: unity-build-log
+          path: Logs/**
