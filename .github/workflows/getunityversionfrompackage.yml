@@ -29,6 +29,13 @@ jobs:
       - id: getVersion
         name: 'Get Unity Version Number'
         run: |
+          echo "::group::Script Versioning"
+            $scriptVersion = '1.0.0'
+
+            echo 'Build Script Version'
+            echo $scriptVersion
+          echo "::endgroup::"
+
           echo "::group::Validating input"
 
           $versionFile = "${{ inputs.version-file-path }}"

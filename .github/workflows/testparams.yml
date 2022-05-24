@@ -19,6 +19,13 @@ jobs:
       - id: testInput
         name: 'Test Input Params'
         run: |
+          echo "::group::Script Versioning"
+            $scriptVersion = '1.0.0'
+
+            echo 'Build Script Version'
+            echo $scriptVersion
+          echo "::endgroup::"
+
           echo "::group::Testing input params"
           $inputText = "${{ inputs.teststring }}"
           if([string]::IsNullOrEmpty($inputText))
