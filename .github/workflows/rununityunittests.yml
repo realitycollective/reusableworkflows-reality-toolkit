@@ -308,21 +308,21 @@ jobs:
 
           echo "---------------------------------------------"
           echo "Start Building"
-          if (Test-Path "$destinationPath/com.realitytoolkit.buildtools") 
+          if (Test-Path "$destinationPath/com.realitycollective.buildtools") 
           {
             if ( -not (Test-Path "$editorrunpath") ) {
               New-Item 'builds' -ItemType Directory
             }
             $buildTarget = "${{ matrix.build-target }}"
             $buildPath = 'builds' + $directorySeparatorChar + $buildTarget;
-            $buildMethod = 'RealityToolkit.BuildTools.Editor.BuildCommand.Build';
+            $buildMethod = 'RealityCollective.BuildTools.Editor.BuildCommand.Build';
 
             echo "Unity Command\n[unity-editor -projectPath $TempUnityProjectName -logfile $logPath -nographics -quit -buildTarget $buildTarget -executeMethod $buildMethod -buildPath $buildPath]"
 
             unity-editor -projectPath $TempUnityProjectName -logfile $logPath -nographics -quit -buildTarget $buildTarget -executeMethod $buildMethod -buildPath $buildPath
           }
           else {
-            echo "Build tools not found, have you included com.realitytoolkit.buildtools in the build depenendencies?"
+            echo "Build tools not found, have you included com.realitycollective.buildtools in the build depenendencies?"
             exit $LASTEXITCODE
           }
           echo "---------------------------------------------"          
