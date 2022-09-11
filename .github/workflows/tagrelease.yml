@@ -66,6 +66,7 @@ jobs:
       - id: getpackageversion
         name: Bump UPM Package version
         run: |
+          npm config set git-tag-version false
           $result = npm version prerelease -m "Auto increment pre-release version to %s [skip ci]" --force
           if([string]::IsNullOrEmpty($result)) {
             echo "NPM Version patch failed"
