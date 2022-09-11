@@ -13,6 +13,8 @@ on:
     secrets:
       GIT_USER_NAME: 
         required: false
+      GIT_PAT:
+        required: true
 
 jobs:
   packageRelease:
@@ -25,11 +27,12 @@ jobs:
         with:
           submodules: recursive
           clean: true
+          token: ${{ secrets.GIT_PAT }}          
       - uses: actions/setup-node@v2
       - name: Set Github vars
         run: |
           echo "::group::Script Versioning"
-            $scriptVersion = '1.0.0'
+            $scriptVersion = '1.0.1'
 
             echo 'Build Script Version'
             echo $scriptVersion
@@ -53,6 +56,11 @@ jobs:
           git config --global user.email "$gitUser@users.noreply.github.com"
           git config --global user.name "$gitUser"
         shell: pwsh
+      - name: Get Package Version
+        run: |
+          $result = npm pkg get version
+          echo "Package Version is $result"
+          # echo "::set-output name=packageversion::$result"
       - name: Create Tag Release
         run: |
           git tag -fa "${{ steps.getpackageversion.outputs.packageversion }}" "${GITHUB_SHA}" -m "${{ steps.getpackageversion.outputs.packageversion }}"
@@ -66,6 +74,5 @@ jobs:
             echo "NPM Version patch failed"
             exit 1
           }          
-          echo "::set-output name=packageversion::$result"
           git push origin "${{ steps.getpackageversion.outputs.packageversion }}"
         shell: pwsh
