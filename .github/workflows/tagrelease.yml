@@ -53,6 +53,11 @@ jobs:
           git config --global user.email "$gitUser@users.noreply.github.com"
           git config --global user.name "$gitUser"
         shell: pwsh
+      - name: Create Tag Release
+        run: |
+          git tag -fa "${{ steps.getpackageversion.outputs.packageversion }}" "${GITHUB_SHA}" -m "${{ steps.getpackageversion.outputs.packageversion }}"
+          git push origin "${{ steps.getpackageversion.outputs.packageversion }}"
+        shell: pwsh        
       - id: getpackageversion
         name: Bump UPM Package version
         run: |
@@ -62,10 +67,5 @@ jobs:
             exit 1
           }          
           echo "::set-output name=packageversion::$result"
-          git push origin "${{ steps.getpackageversion.outputs.packageversion }}"
-        shell: pwsh
-      - name: Create Tag Release
-        run: |
-          git tag -fa "${{ steps.getpackageversion.outputs.packageversion }}" "${GITHUB_SHA}" -m "${{ steps.getpackageversion.outputs.packageversion }}"
           git push origin "${{ steps.getpackageversion.outputs.packageversion }}"
         shell: pwsh
