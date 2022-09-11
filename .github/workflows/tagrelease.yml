@@ -66,5 +66,6 @@ jobs:
           }          
           echo "Package Version is $result"
           echo "::set-output name=packageversion::$result"
+          git tag -fa "${{ steps.getpackageversion.outputs.packageversion }}" "${GITHUB_SHA}" -m "${{ steps.getpackageversion.outputs.packageversion }}"
           git push origin "${{ steps.getpackageversion.outputs.packageversion }}"
         shell: pwsh
