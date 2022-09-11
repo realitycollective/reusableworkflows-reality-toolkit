@@ -56,15 +56,12 @@ jobs:
           git config --global user.email "$gitUser@users.noreply.github.com"
           git config --global user.name "$gitUser"
         shell: pwsh
-      - name: Get Package Version
+      - name: Create Tag Release
         run: |
           $result = npm pkg get version
           echo "Package Version is $result"
-          # echo "::set-output name=packageversion::$result"
-      - name: Create Tag Release
-        run: |
-          git tag -fa "${{ steps.getpackageversion.outputs.packageversion }}" "${GITHUB_SHA}" -m "${{ steps.getpackageversion.outputs.packageversion }}"
-          git push origin "${{ steps.getpackageversion.outputs.packageversion }}"
+          git tag -fa "$result" "${GITHUB_SHA}" -m "$result"
+          git push origin "$result"
         shell: pwsh        
       - id: getpackageversion
         name: Bump UPM Package version
@@ -74,5 +71,5 @@ jobs:
             echo "NPM Version patch failed"
             exit 1
           }          
-          git push origin "${{ steps.getpackageversion.outputs.packageversion }}"
+          git push origin "$result"
         shell: pwsh
