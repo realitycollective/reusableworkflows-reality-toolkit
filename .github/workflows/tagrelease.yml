@@ -58,16 +58,13 @@ jobs:
         shell: pwsh
       - name: Create Tag Release
         run: |
-          $result = npm pkg get version
-          echo "Package Version is $result"
-          git tag -fa "$result" "${GITHUB_SHA}" -m "$result"
-          
-          npm config set git-tag-version false
+          npm config set git-tag-version true
           $result = npm version prerelease -m "Auto increment pre-release version to %s [skip ci]" --force
           if([string]::IsNullOrEmpty($result)) {
             echo "NPM Version patch failed"
             exit 1
           }          
+          echo "Package Version is $result"
           echo "::set-output name=packageversion::$result"
           git push origin "${{ steps.getpackageversion.outputs.packageversion }}"
         shell: pwsh
