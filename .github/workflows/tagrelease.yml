@@ -61,10 +61,7 @@ jobs:
           $result = npm pkg get version
           echo "Package Version is $result"
           git tag -fa "$result" "${GITHUB_SHA}" -m "$result"
-        shell: pwsh        
-      - id: getpackageversion
-        name: Bump UPM Package version
-        run: |
+          
           npm config set git-tag-version false
           $result = npm version prerelease -m "Auto increment pre-release version to %s [skip ci]" --force
           if([string]::IsNullOrEmpty($result)) {
