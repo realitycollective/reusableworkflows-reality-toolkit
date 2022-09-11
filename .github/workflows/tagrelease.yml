@@ -61,7 +61,6 @@ jobs:
           $result = npm pkg get version
           echo "Package Version is $result"
           git tag -fa "$result" "${GITHUB_SHA}" -m "$result"
-          git push origin "$result"
         shell: pwsh        
       - id: getpackageversion
         name: Bump UPM Package version
