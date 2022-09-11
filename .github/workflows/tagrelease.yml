@@ -68,5 +68,5 @@ jobs:
             echo "NPM Version patch failed"
             exit 1
           }          
-          git push origin "$result"
+          git push origin
         shell: pwsh
