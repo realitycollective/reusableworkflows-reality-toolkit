@@ -68,5 +68,6 @@ jobs:
             echo "NPM Version patch failed"
             exit 1
           }          
-          git push
+          echo "::set-output name=packageversion::$result"
+          git push origin "${{ steps.getpackageversion.outputs.packageversion }}"
         shell: pwsh
