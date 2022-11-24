@@ -290,7 +290,7 @@ jobs:
           }
 
           echo "Unity Project path $TempUnityProjectName"
-          echo "::set-output name=unityprojectpath::$TempUnityProjectName"          
+          echo "unityprojectpath=$TempUnityProjectName" >> $env:GITHUB_OUTPUT
           echo "::endgroup::"
 
           if($LASTEXITCODE -ne '0'){

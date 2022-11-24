@@ -60,7 +60,7 @@ jobs:
           $unityVersion = $matches[1].Groups['version'].Value.Trim()
         
           echo "Detected version is $unityVersion"
-          echo "::set-output name=upmunityversion::$unityVersion"
+          echo "upmunityversion=$unityVersion" >> $env:GITHUB_OUTPUT
           echo "::endgroup::"
 
         shell: pwsh

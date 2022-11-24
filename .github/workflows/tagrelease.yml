@@ -61,7 +61,7 @@ jobs:
             echo "NPM Version patch failed"
             exit 1
           }          
-          echo "::set-output name=packageversion::$result"
+          echo "packageversion=$result" >> $env:GITHUB_OUTPUT
           git push origin "${{ steps.getpackageversion.outputs.packageversion }}"
         shell: pwsh
       - name: Create Tag Release

@@ -104,8 +104,8 @@ jobs:
             echo "Editor already installed, exiting..."
             echo ""
             echo "UnityEditor path set to: $editorPath"
-            echo "::set-output name=editor-path::$editorPath"
-            echo "::set-output name=unityversion::$unityVersion"            
+            echo "editor-path=$editorPath" >> $env:GITHUB_OUTPUT
+            echo "unityversion=$unityVersion" >> $env:GITHUB_OUTPUT
             echo "::endgroup::"
             exit 0
           } 
@@ -163,8 +163,8 @@ jobs:
 
           echo ""
           echo "UnityEditor path set to: $editorPath"
-          echo "::set-output name=editor-path::$editorPath"
-          echo "::set-output name=unityversion::$unityVersion"
+          echo "editor-path=$editorPath" >> $env:GITHUB_OUTPUT
+          echo "unityversion=$unityVersion" >> $env:GITHUB_OUTPUT
           echo "::endgroup::"
 
           exit 0
