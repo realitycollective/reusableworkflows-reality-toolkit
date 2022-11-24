@@ -66,7 +66,7 @@ jobs:
           }
 
           echo "Detected version is $unityVersion"
-          echo "upmunityversion=$unityVersion" >> $GITHUB_OUTPUT
+          echo "upmunityversion=2021.3" >> $GITHUB_OUTPUT
           echo "::endgroup::"
 
         shell: pwsh
