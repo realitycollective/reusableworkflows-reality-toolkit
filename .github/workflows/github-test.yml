@@ -2,6 +2,10 @@ name: GitHub Outputs
 
 on:
   workflow_call:
+    inputs:
+      build-target:
+        required: true
+        type: string  
     outputs:
       workflow_output1:
         description: "The first job output"
@@ -12,7 +16,7 @@ on:
 
 jobs:
   job1:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.build-target }}
     # Map a step output to a job output
     outputs:
       output1: ${{ steps.step1.outputs.test }}

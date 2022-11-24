@@ -20,7 +20,7 @@ jobs:
     name: Get required Unity version from UPM Package
     runs-on: ${{ inputs.build-target }}
     outputs:
-      upmunityversion: ${{ steps.getVersion.outputs.upmunityversion }}
+      upmunityversion: ${{ steps.getVersion.outputs.packageunityversion }}
     steps:
       - name: Script Version
         run: |
@@ -45,7 +45,7 @@ jobs:
             echo 'version input was empty, using default'
             $versionFile = 'package.json'
           }
-          echo 'Checking for project json at ' + $versionFile
+          echo 'Checking for project json at $versionFile'
 
           if ( -not (Test-Path -Path $versionFile) ) {
             Write-Error "Failed to find a valid package.json file"
@@ -65,8 +65,9 @@ jobs:
             exit 1
           }
 
+          echo "packageunityversion=$unityVersion" >> $GITHUB_OUTPUT
+
           echo "Detected version is $unityVersion"
-          echo "upmunityversion=2021.3" >> $GITHUB_OUTPUT
           echo "::endgroup::"
 
         shell: pwsh
