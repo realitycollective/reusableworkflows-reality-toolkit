@@ -27,11 +27,10 @@ jobs:
       - name: Script Version
         run: |
           echo "::group::Script Versioning"
-            $scriptVersion = '1.0.1'
-
-            echo 'Build Script Version'
-            echo $scriptVersion
-          echo "::endgroup::"        
+          $scriptVersion = "1.0.1"
+          echo "Build Script Version: $scriptVersion"
+          echo "::endgroup::"
+        shell: pwsh     
       - id: validate
         name: 'Unity Project Validation'
         run: |
@@ -105,8 +104,8 @@ jobs:
             echo "Editor already installed, exiting..."
             echo ""
             echo "UnityEditor path set to: $editorPath"
-            echo "editor-path=$editorPath" >> $GITHUB_OUTPUT
-            echo "unityversion=$unityVersion" >> $GITHUB_OUTPUT
+            echo "::set-output name=editor-path::$editorPath"
+            echo "::set-output name=unityversion::$unityVersion"            
             echo "::endgroup::"
             exit 0
           } 
@@ -164,8 +163,8 @@ jobs:
 
           echo ""
           echo "UnityEditor path set to: $editorPath"
-          echo "editor-path=$editorPath" >> $GITHUB_OUTPUT
-          echo "unityversion=$unityVersion" >> $GITHUB_OUTPUT
+          echo "::set-output name=editor-path::$editorPath"
+          echo "::set-output name=unityversion::$unityVersion"
           echo "::endgroup::"
 
           exit 0

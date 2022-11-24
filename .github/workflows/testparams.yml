@@ -19,11 +19,10 @@ jobs:
       - name: Script Version
         run: |
           echo "::group::Script Versioning"
-            $scriptVersion = '1.0.1'
-
-            echo 'Build Script Version'
-            echo $scriptVersion
-          echo "::endgroup::"        
+          $scriptVersion = "1.0.1"
+          echo "Build Script Version: $scriptVersion"
+          echo "::endgroup::"
+        shell: pwsh       
       - id: testInput
         name: 'Test Input Params'
         run: |

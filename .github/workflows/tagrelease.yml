@@ -24,11 +24,10 @@ jobs:
       - name: Script Version
         run: |
           echo "::group::Script Versioning"
-            $scriptVersion = '1.0.1'
-
-            echo 'Build Script Version'
-            echo $scriptVersion
-          echo "::endgroup::"        
+          $scriptVersion = "1.0.1"
+          echo "Build Script Version: $scriptVersion"
+          echo "::endgroup::"
+        shell: pwsh   
       - uses: actions/checkout@v3
         with:
           submodules: recursive
@@ -62,7 +61,7 @@ jobs:
             echo "NPM Version patch failed"
             exit 1
           }          
-          echo "packageversion=$result" >> $GITHUB_OUTPUT
+          echo "::set-output name=packageversion::$result"
           git push origin "${{ steps.getpackageversion.outputs.packageversion }}"
         shell: pwsh
       - name: Create Tag Release

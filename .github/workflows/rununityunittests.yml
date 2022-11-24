@@ -44,11 +44,10 @@ jobs:
       - name: Script Version
         run: |
           echo "::group::Script Versioning"
-            $scriptVersion = '1.0.1'
-
-            echo 'Build Script Version'
-            echo $scriptVersion
-          echo "::endgroup::"        
+          $scriptVersion = "1.0.1"
+          echo "Build Script Version: $scriptVersion"
+          echo "::endgroup::"
+        shell: pwsh       
       - uses: actions/checkout@v3
         with:
           submodules: recursive
@@ -291,7 +290,7 @@ jobs:
           }
 
           echo "Unity Project path $TempUnityProjectName"
-          echo "unityprojectpath=$TempUnityProjectName" >> $GITHUB_OUTPUT
+          echo "::set-output name=unityprojectpath::$TempUnityProjectName"          
           echo "::endgroup::"
 
           if($LASTEXITCODE -ne '0'){

@@ -25,11 +25,10 @@ jobs:
       - name: Script Version
         run: |
           echo "::group::Script Versioning"
-            $scriptVersion = '1.0.1'
-
-            echo 'Build Script Version'
-            echo $scriptVersion
-          echo "::endgroup::"        
+          $scriptVersion = "1.0.1"
+          echo "Build Script Version: $scriptVersion"
+          echo "::endgroup::"
+        shell: pwsh
       - uses: actions/checkout@v3
         with:
           submodules: recursive
@@ -61,7 +60,7 @@ jobs:
           $unityVersion = $matches[1].Groups['version'].Value.Trim()
         
           echo "Detected version is $unityVersion"
-          echo "upmunityversion=$unityVersion" >> $GITHUB_OUTPUT
+          echo "::set-output name=upmunityversion::$unityVersion"
           echo "::endgroup::"
 
         shell: pwsh

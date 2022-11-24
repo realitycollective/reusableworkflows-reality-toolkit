@@ -64,7 +64,7 @@ jobs:
             exit 1
           }
 
-          echo "packageunityversion=$unityVersion" >> $GITHUB_OUTPUT
+          echo "::set-output name=packageunityversion::$unityVersion"
 
           echo "Detected version is $unityVersion"
           echo "::endgroup::"
