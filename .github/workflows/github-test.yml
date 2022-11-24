@@ -22,6 +22,13 @@ jobs:
       output1: ${{ steps.step1.outputs.test }}
       output2: ${{ steps.step2.outputs.test }}
     steps:
+      - name: Script Version
+        run: |
+          echo "::group::Script Versioning"
+          $scriptVersion = "1.0.1"
+          echo "Build Script Version: $scriptVersion"
+          echo "::endgroup::"    
+        shell: pwsh
       - id: step1
         run: echo "test=hello" >> $GITHUB_OUTPUT
       - id: step2
