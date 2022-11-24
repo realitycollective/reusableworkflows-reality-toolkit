@@ -22,20 +22,21 @@ jobs:
     outputs:
       upmunityversion: ${{ steps.getversion.outputs.upmunityversion }}
     steps:
-      - uses: actions/checkout@v2
+      - name: Script Version
+        run: |
+          echo "::group::Script Versioning"
+            $scriptVersion = '1.0.1'
+
+            echo 'Build Script Version'
+            echo $scriptVersion
+          echo "::endgroup::"        
+      - uses: actions/checkout@v3
         with:
           submodules: recursive
           clean: true
       - id: getversion
         name: 'Get Unity Package Version'
         run: |
-          echo "::group::Script Versioning"
-            $scriptVersion = '1.0.0'
-
-            echo 'Build Script Version'
-            echo $scriptVersion
-          echo "::endgroup::"
-
           echo "::group::Validating input"
 
           $versionFile = "${{ inputs.version-file-path }}"
@@ -60,7 +61,7 @@ jobs:
           $unityVersion = $matches[1].Groups['version'].Value.Trim()
         
           echo "Detected version is $unityVersion"
-          echo "::set-output name=upmunityversion::$unityVersion"
+          echo "upmunityversion=$unityVersion" >> $GITHUB_OUTPUT
           echo "::endgroup::"
 
         shell: pwsh

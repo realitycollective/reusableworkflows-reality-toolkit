@@ -16,16 +16,17 @@ jobs:
     name: Validate Unity Hub and Editor install required for Project
     runs-on: ${{ inputs.build-target }}
     steps:
-      - id: testInput
-        name: 'Test Input Params'
+      - name: Script Version
         run: |
           echo "::group::Script Versioning"
-            $scriptVersion = '1.0.0'
+            $scriptVersion = '1.0.1'
 
             echo 'Build Script Version'
             echo $scriptVersion
-          echo "::endgroup::"
-
+          echo "::endgroup::"        
+      - id: testInput
+        name: 'Test Input Params'
+        run: |
           echo "::group::Testing input params"
           $inputText = "${{ inputs.teststring }}"
           if([string]::IsNullOrEmpty($inputText))

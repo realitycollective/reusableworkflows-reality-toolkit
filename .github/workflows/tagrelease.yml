@@ -13,8 +13,6 @@ on:
     secrets:
       GIT_USER_NAME: 
         required: false
-      GIT_PAT:
-        required: true
 
 jobs:
   packageRelease:
@@ -23,21 +21,21 @@ jobs:
     outputs:
       packageversion: ${{ steps.getpackageversion.outputs.packageversion }}    
     steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: recursive
-          clean: true
-          token: ${{ secrets.GIT_PAT }}          
-      - uses: actions/setup-node@v2
-      - name: Set Github vars
+      - name: Script Version
         run: |
           echo "::group::Script Versioning"
             $scriptVersion = '1.0.1'
 
             echo 'Build Script Version'
             echo $scriptVersion
-          echo "::endgroup::"
-
+          echo "::endgroup::"        
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          clean: true
+      - uses: actions/setup-node@v3
+      - name: Set Github vars
+        run: |
           if([string]::IsNullOrEmpty('${{ secrets.GIT_USER_NAME }}')){
             if([string]::IsNullOrEmpty('${{ secrets.GIT_USER_NAME }}')){
               $gitUser = "action"
@@ -64,7 +62,7 @@ jobs:
             echo "NPM Version patch failed"
             exit 1
           }          
-          echo "::set-output name=packageversion::$result"
+          echo "packageversion=$result" >> $GITHUB_OUTPUT
           git push origin "${{ steps.getpackageversion.outputs.packageversion }}"
         shell: pwsh
       - name: Create Tag Release

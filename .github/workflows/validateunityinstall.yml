@@ -27,16 +27,17 @@ jobs:
       unityversion: ${{ steps.validate.outputs.unityversion }}
       editorinstalled: ${{ steps.validate.outputs.editorinstalled }}
     steps:
-      - id: validate
-        name: 'Unity Project Validation'
+      - name: Script Version
         run: |
           echo "::group::Script Versioning"
-            $scriptVersion = '1.0.0'
+            $scriptVersion = '1.0.1'
 
             echo 'Build Script Version'
             echo $scriptVersion
-          echo "::endgroup::"
-
+          echo "::endgroup::"        
+      - id: validate
+        name: 'Unity Project Validation'
+        run: |
           echo "::group::Validating input"
 
           $unityVersion = '${{ inputs.unityversion }}'
@@ -153,7 +154,7 @@ jobs:
             echo "Long Unity version is $unityVersion"
           }
 
-          echo "::set-output name=unityversion::$unityVersion"            
+          echo "unityversion=$unityVersion" >> $GITHUB_OUTPUT
 
           $editorPath = "{0}{1}{2}" -f $editorRootPath,$unityVersion,$editorFileEx
 
@@ -179,8 +180,8 @@ jobs:
           echo "UnityEditor path set to: $editorPath"
           echo ""
           echo "Editor install result was $installedResult"
-          echo "::set-output name=unityversion::$unityVersion"
-          echo "::set-output name=editorinstalled::$installedResult"
+          echo "unityversion=$unityVersion" >> $GITHUB_OUTPUT
+          echo "editorinstalled=$installedResult" >> $GITHUB_OUTPUT
           echo "::endgroup::"
 
           exit 0

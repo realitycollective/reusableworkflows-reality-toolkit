@@ -22,17 +22,19 @@ jobs:
     runs-on: ${{ inputs.build-target }}
     outputs:
       unityversion: ${{ steps.validate.outputs.unityversion }}
+      editor-path: ${{ steps.validate.outputs.editor-path }}
     steps:
-      - id: validate
-        name: 'Unity Project Validation'
+      - name: Script Version
         run: |
           echo "::group::Script Versioning"
-            $scriptVersion = '1.0.0'
+            $scriptVersion = '1.0.1'
 
             echo 'Build Script Version'
             echo $scriptVersion
-          echo "::endgroup::"
-
+          echo "::endgroup::"        
+      - id: validate
+        name: 'Unity Project Validation'
+        run: |
           echo "::group::Validating input"
 
           $unityVersion = '${{ inputs.unityversion }}'
@@ -50,7 +52,7 @@ jobs:
             $editorFileEx = "\Editor\Unity.exe"
             if ([string]::IsNullOrEmpty($modulesString)) 
             {
-              $modules = @('windows-il2cpp', 'universal-windows-platform', 'lumin', 'webgl', 'android')
+              $modules = @('windows-il2cpp', 'universal-windows-platform', 'webgl', 'android')
             }
             #"Unity Hub.exe" -- --headless help
             #. 'C:\Program Files\Unity Hub\Unity Hub.exe' -- --headless help
@@ -65,7 +67,7 @@ jobs:
             $editorFileEx = "/Unity.app/Contents/MacOS/Unity"
             if ([string]::IsNullOrEmpty($modulesString)) 
             {
-              $modules = @('mac-il2cpp', 'ios', 'lumin', 'webgl', 'android')
+              $modules = @('mac-il2cpp', 'ios', 'webgl', 'android')
             }
             # /Applications/Unity\ Hub.app/Contents/MacOS/Unity\ Hub -- --headless help
             function unity-hub {
@@ -103,8 +105,8 @@ jobs:
             echo "Editor already installed, exiting..."
             echo ""
             echo "UnityEditor path set to: $editorPath"
-            echo "::set-output name=editor-path::$editorPath"
-            echo "::set-output name=unityversion::$unityVersion"            
+            echo "editor-path=$editorPath" >> $GITHUB_OUTPUT
+            echo "unityversion=$unityVersion" >> $GITHUB_OUTPUT
             echo "::endgroup::"
             exit 0
           } 
@@ -162,8 +164,8 @@ jobs:
 
           echo ""
           echo "UnityEditor path set to: $editorPath"
-          echo "::set-output name=editor-path::$editorPath"
-          echo "::set-output name=unityversion::$unityVersion"
+          echo "editor-path=$editorPath" >> $GITHUB_OUTPUT
+          echo "unityversion=$unityVersion" >> $GITHUB_OUTPUT
           echo "::endgroup::"
 
           exit 0
