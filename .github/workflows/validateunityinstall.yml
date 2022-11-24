@@ -153,8 +153,6 @@ jobs:
             echo "Long Unity version is $unityVersion"
           }
 
-          echo "::set-output name=unityversion::$unityVersion"            
-
           $editorPath = "{0}{1}{2}" -f $editorRootPath,$unityVersion,$editorFileEx
 
           echo "Unity Hub found at `"$hubPath`""
@@ -179,8 +177,8 @@ jobs:
           echo "UnityEditor path set to: $editorPath"
           echo ""
           echo "Editor install result was $installedResult"
-          echo "::set-output name=unityversion::$unityVersion"
-          echo "::set-output name=editorinstalled::$installedResult"
+          echo "unityversion=$unityVersion" >> $env:GITHUB_OUTPUT
+          echo "editorinstalled=$installedResult" >> $env:GITHUB_OUTPUT
           echo "::endgroup::"
 
           exit 0
