@@ -33,7 +33,7 @@ jobs:
       - name: Script Version
         run: |
           echo "::group::Script Versioning"
-          $scriptVersion = "1.0.1"
+          $scriptVersion = "1.0.2"
           echo "Build Script Version: $scriptVersion"
           echo "::endgroup::"
         shell: pwsh     
@@ -53,10 +53,11 @@ jobs:
           if([string]::IsNullOrEmpty($unityVersion))
           {
               echo 'Unity version missing, using default'
-              $unityVersion = '2021.3.14f1'
+              $unityVersion = '2021.3.15f1'
           }
 
           if ( (-not $global:PSVersionTable.Platform) -or ($global:PSVersionTable.Platform -eq "Win32NT") ) {
+            echo 'Building using Windows'
             $directorySeparatorChar = "\"
             $editorRootPath = "C:/Program Files/Unity/Hub/Editor/"
             $editorFileEx = "/Editor/Unity.exe"
@@ -68,10 +69,11 @@ jobs:
             }
           }
           elseif ( $global:PSVersionTable.OS.Contains("Darwin") ) {
+            echo 'Building using Mac'
             $directorySeparatorChar = "/"
             $editorRootPath = "/Applications/Unity/Hub/Editor/"
             $editorFileEx = "/Unity.app/Contents/MacOS/Unity"
-            $editorrunpath = '$editorRootPath' + '$unityVersion' + '$editorFileEx'
+            $editorrunpath = $editorRootPath + $unityVersion + $editorFileEx
 
             function unity-editor {
               #$p = Start-Process -Verbose -NoNewWindow -PassThru -Wait -FilePath "$editorrunpath" -ArgumentList (@(' -batchmode') + $args.Split(" "))
@@ -79,14 +81,19 @@ jobs:
             }
           }
           elseif ( $global:PSVersionTable.OS.Contains("Linux") ) {
+            echo 'Building using Linux'
             $directorySeparatorChar = "/"
             $editorRootPath = "$HOME/Unity/Hub/Editor/"
             $editorFileEx = "/Editor/Unity"
-            $editorrunpath = '$editorRootPath' + '$unityVersion' + '$editorFileEx'
+            $editorrunpath = $editorRootPath + $unityVersion + $editorFileEx
 
             function unity-editor {
               xvfb-run --auto-servernum "$editorrunpath" -batchmode $args.Split(" ")
             }
+          }
+          else
+          {
+            echo 'Unknown build platform'
           }
 
           if ( -not (Test-Path "$editorrunpath") ) 
