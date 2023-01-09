@@ -32,6 +32,7 @@ jobs:
         with:
           submodules: recursive
           clean: true
+          token: ${{ secrets.GIT_PAT }}
       - uses: actions/setup-node@v3
       - name: Set Github vars
         run: |
@@ -67,5 +68,5 @@ jobs:
       - name: Create Tag Release
         run: |
           git tag -fa "${{ steps.getpackageversion.outputs.packageversion }}" "${GITHUB_SHA}" -m "${{ steps.getpackageversion.outputs.packageversion }}"
-          git push origin "${{ steps.getpackageversion.outputs.packageversion }}"
+          git push origin "${{ steps.getpackageversion.outputs.packageversion }}" --force
         shell: pwsh
