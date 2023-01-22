@@ -139,18 +139,33 @@ jobs:
             exit 1
           }
 
-          function GetString($InputString, $InputPattern, $MatchIndex) {
+          function GetString($InputString, $InputPattern, $MatchIndex) 
+          {
             $regExResult = $InputString | Select-String -Pattern $InputPattern
-            $regExResult.Matches[$MatchIndex].Value
-          }          
+            if($regExResult.Length -gt 0)
+            {
+              return $regExResult.Matches[$MatchIndex].Value
+            }
+            else 
+            {
+              return 0
+            }
+          }
 
           if($unityVersion.Length -lt 10)
           {
             echo 'Short version of Version provided, finding latest full unity version number'
-            $InstalledUnityVersions = unity-hub editors -r
-            $unityVersion = GetString $InstalledUnityVersions "$unityVersion.{4,7}" -MatchIndex 0
-            $unityVersion = $unityVersion.Trim(","," ").Trim()
-            echo "Long Unity version is $unityVersion"
+            $queryUnityVersion = GetString $InstalledUnityVersions "$unityVersion.{4,7}" -MatchIndex 0
+            if ($queryUnityVersion -ne 0) 
+            {
+                $unityVersion = $queryUnityVersion.Trim(","," ").Trim()
+                echo "Long Unity version is $unityVersion"
+            }
+            else 
+            {
+                echo "Unity $unityVersion not found on this machine, please install"
+                exit 1
+            }
           }
 
           $editorPath = "{0}{1}{2}" -f $editorRootPath,$unityVersion,$editorFileEx
