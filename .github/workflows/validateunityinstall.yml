@@ -155,6 +155,7 @@ jobs:
           if($unityVersion.Length -lt 10)
           {
             echo 'Short version of Version provided, finding latest full unity version number'
+            $InstalledUnityVersions = unity-hub editors -i
             $queryUnityVersion = GetString $InstalledUnityVersions "$unityVersion.{4,7}" -MatchIndex 0
             if ($queryUnityVersion -ne 0) 
             {
