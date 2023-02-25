@@ -3,7 +3,7 @@ name: Validate the Unity Build environment on server
 on:
   workflow_call:
     inputs:
-      build-target:
+      build-host:
         description: "Platform the job should run under"
         required: true
         type: string    
@@ -14,12 +14,12 @@ on:
 jobs:
   validate_unity_install:
     name: Validate Unity Hub and Editor install required for Project
-    runs-on: ${{ inputs.build-target }}
+    runs-on: ${{ inputs.build-host }}
     steps:
       - name: Script Version
         run: |
           echo "::group::Script Versioning"
-          $scriptVersion = "1.0.1"
+          $scriptVersion = "1.0.2"
           echo "Build Script Version: $scriptVersion"
           echo "::endgroup::"
         shell: pwsh       

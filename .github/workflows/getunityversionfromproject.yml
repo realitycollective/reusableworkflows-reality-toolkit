@@ -3,7 +3,7 @@ name: Get the Unity version required from a Unity Project, expects a packagevers
 on:
   workflow_call:
     inputs:
-      build-target:
+      build-host:
         required: true
         type: string
       version-file-path:
@@ -18,14 +18,14 @@ on:
 jobs:
   get_unity_version:
     name: Get required Unity version from Unity Project
-    runs-on: ${{ inputs.build-target }}
+    runs-on: ${{ inputs.build-host }}
     outputs:
       upmunityversion: ${{ steps.getversion.outputs.upmunityversion }}
     steps:
       - name: Script Version
         run: |
           echo "::group::Script Versioning"
-          $scriptVersion = "1.0.1"
+          $scriptVersion = "1.0.2"
           echo "Build Script Version: $scriptVersion"
           echo "::endgroup::"
         shell: pwsh

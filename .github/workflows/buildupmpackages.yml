@@ -16,14 +16,14 @@ jobs:
   # Check Unity version requird by the package
   validate-environment:
     name: Get Unity Version from UPM package
-    uses: realitycollective/reusableworkflows/.github/workflows/getunityversionfrompackage.yml@main
+    uses: realitycollective/reusableworkflows/.github/workflows/getunityversionfrompackage.yml@v2
     with:
       build-target: windows
 
   # Validate output parameters from the Validate-Environment job
   Check-Params-unityversion:
     needs: validate-environment
-    uses: realitycollective/reusableworkflows/.github/workflows/testparams.yml@main
+    uses: realitycollective/reusableworkflows/.github/workflows/testparams.yml@v2
     name: Test output from Validate
     with:
       build-target: windows
@@ -33,7 +33,7 @@ jobs:
   Setup-Unity:
     name: Validate Unity Install
     needs: [Check-Params-unityversion, validate-environment]
-    uses: realitycollective/reusableworkflows/.github/workflows/validateunityinstall.yml@main
+    uses: realitycollective/reusableworkflows/.github/workflows/validateunityinstall.yml@v2
     with:
       build-target: windows
       unityversion: ${{ needs.validate-environment.outputs.unityversion }}
@@ -41,7 +41,7 @@ jobs:
   # Validate unityeditorversion output parameter from the Setup-Unity job
   Check-Params-editorversion:
     needs: [Setup-Unity]
-    uses: realitycollective/reusableworkflows/.github/workflows/testparams.yml@main
+    uses: realitycollective/reusableworkflows/.github/workflows/testparams.yml@v2
     name: Test editor version from Setup-Unity
     with:
       build-target: windows
@@ -50,44 +50,36 @@ jobs:
   # Validate unityeditorinstalled output parameter from the Setup-Unity job
   Check-Params-editorinstalled:
     needs: [Setup-Unity]
-    uses: realitycollective/reusableworkflows/.github/workflows/testparams.yml@main
+    uses: realitycollective/reusableworkflows/.github/workflows/testparams.yml@v2
     name: Test editor installed from Setup-Unity
     with:
       build-target: windows
       teststring: ${{ needs.Setup-Unity.outputs.unityeditorinstalled }}
 
-  Install-Unity-Editor:
-    if: ${{ needs.Setup-Unity.outputs.unityeditorinstalled }}  == '0'
-    needs: [Check-Params-editorversion, Check-Params-editorinstalled, Setup-Unity]
-    uses: realitycollective/reusableworkflows/.github/workflows/installunityeditor.yml@main
-    name: Install Unity Editor
-    with:
-      build-target: windows
-      unityversion: ${{ needs.Setup-Unity.outputs.unityeditorversion }}      
-
   # Run Unity unit tests defined in the package
   Run-Unit-Tests:
     name: Run Unity Unit Tests
     needs: [Check-Params-editorversion, Setup-Unity]
-    uses: realitycollective/reusableworkflows/.github/workflows/rununityunittests.yml@main
+    uses: realitycollective/reusableworkflows/.github/workflows/rununityUPMbuild.yml@v2
     with:
       build-target: windows
       unityversion: ${{ needs.Setup-Unity.outputs.unityeditorversion }}
       dependencies: '{"dependancyname": "dependency repository"}'
       # Check inside yml file for instructions on dependencies
-    secrets:
-      GIT_USER_NAME: ${{ secrets.GIT_USER_NAME }}    
-      GIT_PAT: ${{ secrets.GIT_PAT }}
+    secrets: inherit
       
   # Publish preview package if successful, bumps version of package
   run-upm:
     name: Publish UPM Package
     needs: Run-Unit-Tests
-    uses: realitycollective/reusableworkflows/.github/workflows/upmrelease.yml@main
+    uses: realitycollective/reusableworkflows/.github/workflows/upversionandtagrelease.yml@v2
     with:
-      build-target: windows
-    secrets:
-      NPM_USER_EMAIL: ${{ secrets.NPM_USER_EMAIL }}
-      NPM_USER_NAME: ${{ secrets.NPM_USER_NAME }}
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      NPM_REGISTRY: ${{ secrets.NPM_REGISTRY }}
+      build-target: ubuntu-latest
+      build-type: pre-release
+#        options:
+#        - major
+#        - minor
+#        - patch
+#        - patch-release
+#        - pre-release
+#        - build

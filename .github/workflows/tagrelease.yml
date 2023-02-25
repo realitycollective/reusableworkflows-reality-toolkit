@@ -1,35 +1,39 @@
-name: Package UPM project and deploy
+name: Tag Release
 
 on:
   workflow_call:
     inputs:
-      build-target:
+      build-host:
+        required: true
+        type: string    
+      version:
         required: true
         type: string
-    outputs:
-      packageversion:
-        description: "Returns the version of Unity the UPM package requires"
-        value: ${{ jobs.packageRelease.outputs.packageversion }}
-    secrets:
-      GIT_USER_NAME: 
-        required: false
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   packageRelease:
     name: Package UPM Project and tag
-    runs-on: ${{ inputs.build-target }}
+    runs-on: ${{ inputs.build-host }}
     outputs:
       packageversion: ${{ steps.getpackageversion.outputs.packageversion }}    
     steps:
       - name: Script Version
         run: |
           echo "::group::Script Versioning"
-          $scriptVersion = "1.0.1"
+          $scriptVersion = "1.0.2"
           echo "Build Script Version: $scriptVersion"
           echo "::endgroup::"
         shell: pwsh   
       - uses: actions/checkout@v3
         with:
+          fetch-depth: 0
           submodules: recursive
           clean: true
           token: ${{ secrets.GIT_PAT }}
@@ -50,23 +54,26 @@ jobs:
             $gitUser = "${{ secrets.GIT_USER_NAME }}"
             $gitEmail = "$gitUser@users.noreply.github.com"
           }
-          echo "email $gitUser@users.noreply.github.com"
           git config --global user.email "$gitUser@users.noreply.github.com"
           git config --global user.name "$gitUser"
-        shell: pwsh
-      - id: getpackageversion
-        name: Bump UPM Package version
+        shell: pwsh     
+      - name: Check if Tag Exists
         run: |
-          $result = npm version prerelease -m "Auto increment pre-release version to %s [skip ci]" --force
-          if([string]::IsNullOrEmpty($result)) {
-            echo "NPM Version patch failed"
-            exit 1
-          }          
-          echo "packageversion=$result" >> $env:GITHUB_OUTPUT
-          git push origin "${{ steps.getpackageversion.outputs.packageversion }}"
+          $tagVersion = "${{ inputs.version }}"
+          $tags = git tag
+          echo "Tags found are [$tags], searching for [$tagVersion]"
+          foreach ($tag in $tags)
+          {
+              if($tag.Trim() -eq "$tagVersion")
+              {
+                Write-Error "$tagVersion tag already exists"
+                exit 1
+              }
+          }
         shell: pwsh
-      - name: Create Tag Release
+      - name: Create tag and push
         run: |
-          git tag -fa "${{ steps.getpackageversion.outputs.packageversion }}" "${GITHUB_SHA}" -m "${{ steps.getpackageversion.outputs.packageversion }}"
-          git push origin "${{ steps.getpackageversion.outputs.packageversion }}" --force
+          $tagVersion = "${{ inputs.version }}"
+          git tag -fa "v$tagVersion" "${GITHUB_SHA}" -m "v$tagVersion Release [skip ci]"
+          git push origin "v$tagVersion" --force       
         shell: pwsh
