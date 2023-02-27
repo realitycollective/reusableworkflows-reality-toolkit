@@ -86,8 +86,8 @@ jobs:
               )
               <#
               Type of build can be one of the following
-              - 'build'         # Build release       - 1.0.0-pre-release.0+1
-              - 'pre-release'   # Pre-Release release - 1.0.0-pre-release.1
+              - 'build'         # Build release       - 1.0.0-pre.0+1
+              - 'pre-release'   # Pre-Release - 1.0.0-pre.1
               - 'patch-release' # Patch release       - 1.0.1 (reset preview version to current patch, no increase)
               - 'patch'         # Patch release       - 1.0.1
               - 'minor'         # Minor release       - 1.1.0
@@ -107,18 +107,18 @@ jobs:
               $majorVersion = if($null -eq $packageSemVer.Major) {0} else {$packageSemVer.Major}
               $minorVersion = if($null -eq $packageSemVer.Minor) {0} else {$packageSemVer.Minor}
               $patchVersion = if($null -eq $packageSemVer.Patch) {0} else {$packageSemVer.Patch}
-              $prereleaseVersion = if($null -eq $packageSemVer.PreReleaseLabel) {0} else {$packageSemVer.PreReleaseLabel.Replace('pre-release.','')}
+              $prereleaseVersion = if($null -eq $packageSemVer.PreReleaseLabel) {0} else {$packageSemVer.PreReleaseLabel.Replace('pre.','')}
               $buildVersion = if($null -eq $packageSemVer.BuildLabel) {0} else {$packageSemVer.BuildLabel}
 
               # work out new version
               switch ($type) {
                   'build' { 
                       [int]$buildVersion += 1
-                      $newPackageSemVer = [System.Management.Automation.SemanticVersion]::New($majorVersion, $minorVersion, $patchVersion, "pre-release." + $prereleaseVersion, $buildVersion)
+                      $newPackageSemVer = [System.Management.Automation.SemanticVersion]::New($majorVersion, $minorVersion, $patchVersion, "pre." + $prereleaseVersion, $buildVersion)
                   }    
                   'pre-release' { 
                       [int]$prereleaseVersion += 1
-                      $newPackageSemVer = [System.Management.Automation.SemanticVersion]::New($majorVersion, $minorVersion, $patchVersion, "pre-release." + $prereleaseVersion)
+                      $newPackageSemVer = [System.Management.Automation.SemanticVersion]::New($majorVersion, $minorVersion, $patchVersion, "pre." + $prereleaseVersion)
                   }
                   'patch-release' { 
                       $newPackageSemVer = [System.Management.Automation.SemanticVersion]::New($majorVersion, $minorVersion, $patchVersion)
