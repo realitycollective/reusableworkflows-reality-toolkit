@@ -243,10 +243,9 @@ jobs:
 
           # If run manually, the Refname is actually blank, so just use date
           if([string]::IsNullOrEmpty(${GITHUB_REF_NAME})) {
-            $logName = "$logDirectory$directorySeparatorChar$date"
-          }
-          else{          
-            $logName = "$logDirectory$directorySeparatorChar${GITHUB_REF_NAME}-$date"
+            $logName = Join-Path $logDirectory $date
+          }else {          
+            $logName = Join-Path $logDirectory ${GITHUB_REF_NAME}-$date
           }
 
           $logPath = "$logName.log"
