@@ -40,7 +40,6 @@ jobs:
       - id: build
         name: 'Run Unity Builds'
         run: |
-          echo "::group::Set Hub and editor locations"
           $unityVersion = '${{ inputs.unityVersion }}'
 
           echo "::group::Set Hub and editor locations"
@@ -50,8 +49,6 @@ jobs:
           {
             $hubPath = "C:\Program Files\Unity Hub\Unity Hub.exe"
             $editorRootPath = "C:\Program Files\Unity\Hub\Editor\"
-            $editorFileEx = "\Editor\Unity.exe"
-            $directorySeparatorChar = "\"
 
             #"Unity Hub.exe" -- --headless help
             #. 'C:\Program Files\Unity Hub\Unity Hub.exe' -- --headless help
@@ -64,8 +61,6 @@ jobs:
           {
             $hubPath = "/Applications/Unity Hub.app/Contents/MacOS/Unity Hub"
             $editorRootPath = "/Applications/Unity/Hub/Editor/"
-            $editorFileEx = "/Unity.app/Contents/MacOS/Unity"
-            $directorySeparatorChar = "/"
 
             # /Applications/Unity\ Hub.app/Contents/MacOS/Unity\ Hub -- --headless help
             function unity-hub 
@@ -77,8 +72,6 @@ jobs:
           {
             $hubPath = "$HOME/Unity Hub/UnityHub.AppImage"
             $editorRootPath = "$HOME/Unity/Hub/Editor/"
-            $editorFileEx = "/Editor/Unity"
-            $directorySeparatorChar = "/"
 
             # /UnityHub.AppImage --headless help
             # xvfb-run --auto-servernum "$HOME/Unity Hub/UnityHub.AppImage" --headless help
@@ -410,7 +403,6 @@ jobs:
 
             exit $LASTEXITCODE
           }
-          echo "::endgroup::"
 
         shell: pwsh
       - uses: actions/upload-artifact@v3
