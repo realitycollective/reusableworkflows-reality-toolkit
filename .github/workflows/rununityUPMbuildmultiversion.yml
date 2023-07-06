@@ -66,7 +66,6 @@ jobs:
           if ( (-not $global:PSVersionTable.Platform) -or ($global:PSVersionTable.Platform -eq "Win32NT") )
           {
             $hubPath = "C:\Program Files\Unity Hub\Unity Hub.exe"
-            $editorRootPath = "C:\Program Files\Unity\Hub\Editor\"
 
             #"Unity Hub.exe" -- --headless help
             #. 'C:\Program Files\Unity Hub\Unity Hub.exe' -- --headless help
@@ -82,7 +81,6 @@ jobs:
           elseif ( $global:PSVersionTable.OS.Contains("Darwin") ) 
           {
             $hubPath = "/Applications/Unity Hub.app/Contents/MacOS/Unity Hub"
-            $editorRootPath = "/Applications/Unity/Hub/Editor/"
 
             # /Applications/Unity\ Hub.app/Contents/MacOS/Unity\ Hub -- --headless help
             function unity-hub 
@@ -97,7 +95,6 @@ jobs:
           elseif ( $global:PSVersionTable.OS.Contains("Linux") ) 
           {
             $hubPath = "$HOME/Unity Hub/UnityHub.AppImage"
-            $editorRootPath = "$HOME/Unity/Hub/Editor/"
 
             # /UnityHub.AppImage --headless help
             # xvfb-run --auto-servernum "$HOME/Unity Hub/UnityHub.AppImage" --headless help
@@ -286,7 +283,7 @@ jobs:
 
           unity-editor '-createProject' $TempUnityProjectName -quit
 
-          $destinationPath = $TempUnityProjectName + $directorySeparatorChar + 'packages'
+          $destinationPath = Join-Path $TempUnityProjectName 'packages'
           Move-Item -Path $UPMFolderName -Destination $destinationPath
 
           echo "::endgroup::"
@@ -333,7 +330,7 @@ jobs:
             echo $JSONdependencies
 
             # Read current Manifest json
-            $manifestPath = $destinationPath + $directorySeparatorChar + 'manifest.json'
+            $manifestPath = Join-Path $destinationPath 'manifest.json'
             $projectManifest = Get-Content -Path $manifestPath | ConvertFrom-Json
             $strArray = $projectManifest.dependencies.PsObject.Properties | ForEach-Object {"$($_.Name)@$($_.Value),"}
 
