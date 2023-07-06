@@ -72,8 +72,12 @@ jobs:
             #. 'C:\Program Files\Unity Hub\Unity Hub.exe' -- --headless help
             function unity-hub 
             {
+              & $hubPath -- --headless $args.Split(" ") | Out-String
+            }
+            function unity-hub-raw
+            {
               & $hubPath -- --headless $args.Split(" ") | Out-String -NoNewline
-            }            
+            }
           }
           elseif ( $global:PSVersionTable.OS.Contains("Darwin") ) 
           {
@@ -83,8 +87,12 @@ jobs:
             # /Applications/Unity\ Hub.app/Contents/MacOS/Unity\ Hub -- --headless help
             function unity-hub 
             {
+              & $hubPath -- --headless $args.Split(" ") | Out-String
+            }
+            function unity-hub-raw 
+            {
               & $hubPath -- --headless $args.Split(" ") | Out-String -NoNewline
-            }            
+            }
           }
           elseif ( $global:PSVersionTable.OS.Contains("Linux") ) 
           {
@@ -96,7 +104,11 @@ jobs:
             function unity-hub 
             {
               xvfb-run --auto-servernum "$hubPath" --headless $args.Split(" ")
-            }            
+            }
+            function unity-hub-raw 
+            {
+              xvfb-run --auto-servernum "$hubPath" --headless $args.Split(" ")
+            }
           }
 
           echo "::endgroup::"
@@ -128,7 +140,7 @@ jobs:
           echo "Requested unity version is {$unityVersion}"
 
           $InstalledUnityVersions = unity-hub editors
-          $editorRootPath = unity-hub ip -g
+          $editorRootPath = unity-hub-raw ip -g
           echo "Installed unity versions are {$InstalledUnityVersions}"
           echo "Unity install path is {$editorRootPath}"
 
