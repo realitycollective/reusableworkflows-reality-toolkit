@@ -239,7 +239,7 @@ jobs:
 
           echo "::endgroup::"
 
-          echo "::group::Setup logging and run Unit tests"          
+          echo "::group::Setup logging and run Unit tests"
 
           # Log detail
           $logDirectory = "Logs"          
@@ -256,7 +256,7 @@ jobs:
           # If run manually, the Refname is actually blank, so just use date
           if([string]::IsNullOrEmpty(${GITHUB_REF_NAME})) {
             $logName = Join-Path $logDirectory $date
-          }else {          
+          }else {
             $logName = Join-Path $logDirectory ${GITHUB_REF_NAME}-$date
           }
 
@@ -402,7 +402,7 @@ jobs:
 
           echo "::endgroup::"
 
-          echo "::group::Run build"              
+          echo "::group::Run build"
 
           echo "---------------------------------------------"
           echo "Start Testing"
@@ -438,4 +438,4 @@ jobs:
         if: always()
         with:
           name: unity-build-log
-          path: Logs/**        
+          path: Logs/**
