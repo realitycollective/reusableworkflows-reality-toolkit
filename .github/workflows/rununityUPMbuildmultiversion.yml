@@ -316,10 +316,9 @@ jobs:
             # Read dependancy input value
             $dependencies = '${{ inputs.dependencies }}'
 
-            if([string]::IsNullOrEmpty('${{ secrets.GIT_USER_NAME }}') -or [string]::IsNullOrEmpty('${{ secrets.GIT_PAT }}')){
+            if([string]::IsNullOrEmpty('${{ github.actor }}') -or [string]::IsNullOrEmpty('${{ secrets.GITHUB_TOKEN }}')){
               echo ""
-              echo "Secrets for GIT_USER_NAME or GIT_PAT missing, please register them with access to this runner"
-              echo "*Note, Organisation secrets are not accessible to Forked repos and need registering in the local fork"
+              echo "Insufficient credentials supplied to activate the workflow"
               exit 1
             }
 
@@ -343,7 +342,7 @@ jobs:
                 $dependencyURL = $_.Value
                 echo "---------------------------------------------"
                 echo "Cloning dependency - Name [$dependencyName] - Path [$dependencyPath] - URL [$dependencyURL]"
-                $cloneURL = "https://${{ secrets.GIT_USER_NAME }}:${{ secrets.GIT_PAT }}@$dependencyURL"
+                $cloneURL = "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@$dependencyURL"
 
                 echo "cloning $dependencyName from $dependencyURL and moving to $destinationPath"
                 echo "git path - $cloneURL"
