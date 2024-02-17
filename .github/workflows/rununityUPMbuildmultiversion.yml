@@ -54,6 +54,9 @@ jobs:
           - os: macos
             unityVersion: 2022.3
             build-target: StandaloneOSX
+          - os: macos
+            unityVersion: 2022.3
+            build-target: VisionOS
           - os: windows
             unityVersion: 2023.2
             build-target: Android
@@ -69,9 +72,6 @@ jobs:
           - os: macos
             unityVersion: 2023.2
             build-target: StandaloneOSX
-          - os: macos
-            unityVersion: 2023.2
-            build-target: VisionOS
     steps:
       - name: Script Version
         run: |
