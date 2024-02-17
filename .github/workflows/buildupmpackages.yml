@@ -18,7 +18,7 @@ jobs:
     name: Get Unity Version from UPM package
     uses: realitycollective/reusableworkflows/.github/workflows/getunityversionfrompackage.yml@v2
     with:
-      build-target: windows
+      build-host: windows
 
   # Validate output parameters from the Validate-Environment job
   Check-Params-unityversion:
@@ -26,7 +26,7 @@ jobs:
     uses: realitycollective/reusableworkflows/.github/workflows/testparams.yml@v2
     name: Test output from Validate
     with:
-      build-target: windows
+      build-host: windows
       teststring: ${{ needs.validate-environment.outputs.unityversion }}
 
   # Check Unity Hub and Editor Environment
@@ -44,7 +44,7 @@ jobs:
     uses: realitycollective/reusableworkflows/.github/workflows/testparams.yml@v2
     name: Test editor version from Setup-Unity
     with:
-      build-target: windows
+      build-host: windows
       teststring: ${{ needs.Setup-Unity.outputs.unityeditorversion }}
 
   # Validate unityeditorinstalled output parameter from the Setup-Unity job
@@ -53,7 +53,7 @@ jobs:
     uses: realitycollective/reusableworkflows/.github/workflows/testparams.yml@v2
     name: Test editor installed from Setup-Unity
     with:
-      build-target: windows
+      build-host: windows
       teststring: ${{ needs.Setup-Unity.outputs.unityeditorinstalled }}
 
   # Run Unity unit tests defined in the package
@@ -62,7 +62,6 @@ jobs:
     needs: [Check-Params-editorversion, Setup-Unity]
     uses: realitycollective/reusableworkflows/.github/workflows/rununityUPMbuild.yml@v2
     with:
-      build-target: windows
       unityversion: ${{ needs.Setup-Unity.outputs.unityeditorversion }}
       dependencies: '{"dependancyname": "dependency repository"}'
       # Check inside yml file for instructions on dependencies
@@ -74,7 +73,7 @@ jobs:
     needs: Run-Unit-Tests
     uses: realitycollective/reusableworkflows/.github/workflows/upversionandtagrelease.yml@v2
     with:
-      build-target: ubuntu-latest
+      build-host: ubuntu-latest
       build-type: pre-release
 #        options:
 #        - major

@@ -18,7 +18,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        include:  
+        include:
+          - os: macos
+            build-target: iOS
+          - os: macos
+            build-target: StandaloneOSX
+          - os: macos
+            build-target: VisionOS
           - os: windows
             build-target: Android
           - os: windows
@@ -29,11 +35,11 @@ jobs:
       - name: Script Version
         run: |
           echo "::group::Script Versioning"
-          $scriptVersion = "1.0.0"
+          $scriptVersion = "1.0.1"
           echo "Build Script Version: $scriptVersion"
           echo "::endgroup::"
         shell: pwsh     
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
           clean: true
