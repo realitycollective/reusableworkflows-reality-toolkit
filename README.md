@@ -11,6 +11,11 @@ For more details, see the [Automation](https://realitytoolkit.io/docs/category/a
 
 ### [https://realitytoolkit.io/docs/category/automation/](https://realitytoolkit.io/docs/category/automation/)
 
+## V2.0.6 - latest
+
+- Workflows updated with actions/checkout V4
+- Added mac platforms test and 2023.
+
 ### Build workflows
 
 - buildupmpackages.yml - Example end to end workflow for building a UPM package
