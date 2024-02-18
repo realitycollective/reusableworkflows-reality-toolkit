@@ -37,7 +37,7 @@ jobs:
           submodules: recursive
           clean: true
           token: ${{ secrets.GIT_PAT }}
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
       - name: Set Github vars
         run: |
           if([string]::IsNullOrEmpty('${{ secrets.GIT_USER_NAME }}')){
@@ -74,6 +74,6 @@ jobs:
       - name: Create tag and push
         run: |
           $tagVersion = "${{ inputs.version }}"
-          git tag -fa "v$tagVersion" "${GITHUB_SHA}" -m "v$tagVersion Release [skip ci]"
+          git tag -fa "v$tagVersion" "${{github.sha}}" -m "v$tagVersion Release [skip ci]"
           git push origin "v$tagVersion" --force       
         shell: pwsh
