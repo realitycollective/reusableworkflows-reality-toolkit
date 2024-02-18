@@ -176,6 +176,6 @@ jobs:
         if: ${{inputs.createTag == true}}
         run: |
           $outputVersion = '${{steps.getpackageversion.outputs.packageversion }}'
-          git tag -fa "v$outputVersion" "${GITHUB_SHA}" -m "v$outputVersion Release"
+          git tag -fa "v$outputVersion" "${{github.sha}}" -m "v$outputVersion Release"
           git push origin "v$outputVersion" --force --tags
         shell: pwsh
