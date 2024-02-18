@@ -55,7 +55,7 @@ jobs:
           submodules: recursive
           clean: true
           token: ${{ secrets.GIT_PAT }}
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
       - name: Set Github vars
         run: |
           if([string]::IsNullOrEmpty('${{ secrets.GIT_USER_NAME }}')){
