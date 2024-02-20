@@ -288,8 +288,8 @@ jobs:
             $logName = Join-Path $logDirectory ${GITHUB_REF_NAME}-$date
           }
 
-          $logPath = "$unityMajorVersion_$logName.log"
-          $testsLogPath = "$unityMajorVersion_$logName-tests.xml"
+          $logPath = "$unityMajorVersion_${{ matrix.build-target }}_$logName.log"
+          $testsLogPath = "$unityMajorVersion_${{ matrix.build-target }}_$logName-tests.xml"
 
           echo "Logpath [$logPath]"
           echo "TestsPath [$testsLogPath]"
