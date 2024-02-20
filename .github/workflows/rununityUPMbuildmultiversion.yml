@@ -461,9 +461,8 @@ jobs:
           }
 
         shell: pwsh
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v3
         if: always()
         with:
           name: unity-build-log
           path: Logs/**
-          overwrite: true          
