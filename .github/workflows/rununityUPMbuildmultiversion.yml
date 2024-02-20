@@ -89,6 +89,7 @@ jobs:
         name: 'Run Unity Builds'
         run: |
           $unityVersion = '${{ matrix.unityVersion }}'
+          $unityMajorVersion = $unityVersion.Substring(0, 4)
 
           echo "::group::Set Hub and editor locations"
 
@@ -287,8 +288,8 @@ jobs:
             $logName = Join-Path $logDirectory ${GITHUB_REF_NAME}-$date
           }
 
-          $logPath = "${{ matrix.unityVersion }}_$logName.log"
-          $testsLogPath = "${{ matrix.unityVersion }}_$logName-tests.xml"
+          $logPath = "$unityMajorVersion_$logName.log"
+          $testsLogPath = "$unityMajorVersion_$logName-tests.xml"
 
           echo "Logpath [$logPath]"
           echo "TestsPath [$testsLogPath]"
