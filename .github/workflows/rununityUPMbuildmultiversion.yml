@@ -287,8 +287,8 @@ jobs:
             $logName = Join-Path $logDirectory ${GITHUB_REF_NAME}-$date
           }
 
-          $logPath = "$logName.log"
-          $testsLogPath = "$logName-tests.xml"
+          $logPath = "${{ matrix.unityVersion }}_$logName.log"
+          $testsLogPath = "${{ matrix.unityVersion }}_$logName-tests.xml"
 
           echo "Logpath [$logPath]"
           echo "TestsPath [$testsLogPath]"
@@ -465,3 +465,4 @@ jobs:
         with:
           name: unity-build-log
           path: Logs/**
+          overwrite: true          
