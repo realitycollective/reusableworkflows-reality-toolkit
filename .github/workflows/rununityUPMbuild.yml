@@ -412,5 +412,5 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: unity-build-log
+          name: unity-build-log-${{ matrix.build-target }}
           path: Logs/**        
