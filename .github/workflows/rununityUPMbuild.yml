@@ -260,7 +260,7 @@ jobs:
 
           $TempUnityProjectName = 'P'
 
-          unity-editor '-createProject' $TempUnityProjectName -quit
+          unity-editor '-createProject' $TempUnityProjectName '-logFile' $logPath '-quit'
 
           if ( -not (Test-Path "$TempUnityProjectName") )
           {
