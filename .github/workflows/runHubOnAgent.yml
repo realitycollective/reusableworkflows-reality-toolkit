@@ -15,7 +15,7 @@ jobs:
         include:
           - os: macos
           - os: windows
-    
+
     steps:
       - name: Script Version
         run: |
@@ -23,9 +23,9 @@ jobs:
           $scriptVersion = "1.0.0"
           echo "Build Script Version: $scriptVersion"
           echo "::endgroup::"
-        shell: pwsh     
+        shell: pwsh
       - id: openHub
-        name: 'Run Unity Hub'
+        name: "Run Unity Hub"
         run: |
           echo "::group::Set Hub and editor locations"
 
@@ -71,6 +71,5 @@ jobs:
           $InstalledUnityVersions = unity-hub
           echo "::endgroup::"
 
-            exit $LASTEXITCODE
-          }
+          exit $LASTEXITCODE
         shell: pwsh
