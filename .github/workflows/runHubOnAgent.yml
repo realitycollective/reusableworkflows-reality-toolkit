@@ -1,0 +1,73 @@
+name: Run Unity Hub on Agent
+
+on:
+  workflow_call:
+
+jobs:
+  run_build:
+    name: Run Unity Build process
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: macos
+          - os: windows
+    
+    steps:
+      - name: Script Version
+        run: |
+          echo "::group::Script Versioning"
+          $scriptVersion = "1.0.0"
+          echo "Build Script Version: $scriptVersion"
+          echo "::endgroup::"
+        shell: pwsh     
+      - id: openHub
+        name: 'Run Unity Hub'
+        run: |
+          echo "::group::Set Hub and editor locations"
+
+          ## Set Hub and editor locations
+          if ( (-not $global:PSVersionTable.Platform) -or ($global:PSVersionTable.Platform -eq "Win32NT") )
+          {
+            $hubPath = "C:\Program Files\Unity Hub\Unity Hub.exe"
+            $editorRootPath = "C:\Program Files\Unity\Hub\Editor\"
+
+            #"Unity Hub.exe" -- --headless help
+            #. 'C:\Program Files\Unity Hub\Unity Hub.exe' -- --headless help
+            function unity-hub 
+            {
+              & $hubPath -- $args.Split(" ") | Out-String -NoNewline
+            }            
+          }
+          elseif ( $global:PSVersionTable.OS.Contains("Darwin") ) 
+          {
+            $hubPath = "/Applications/Unity Hub.app/Contents/MacOS/Unity Hub"
+            $editorRootPath = "/Applications/Unity/Hub/Editor/"
+
+            # /Applications/Unity\ Hub.app/Contents/MacOS/Unity\ Hub -- --headless help
+            function unity-hub 
+            {
+              & $hubPath -- $args.Split(" ") | Out-String -NoNewline
+            }            
+          }
+          elseif ( $global:PSVersionTable.OS.Contains("Linux") ) 
+          {
+            $hubPath = "$HOME/Unity Hub/UnityHub.AppImage"
+            $editorRootPath = "$HOME/Unity/Hub/Editor/"
+
+            # /UnityHub.AppImage --headless help
+            # xvfb-run --auto-servernum "$HOME/Unity Hub/UnityHub.AppImage" --headless help
+            function unity-hub 
+            {
+              xvfb-run --auto-servernum "$hubPath" $args.Split(" ")
+            }            
+          }
+          echo "::endgroup::"
+
+          echo "::group::StartHub"
+          $InstalledUnityVersions = unity-hub
+          echo "::endgroup::"
+
+            exit $LASTEXITCODE
+          }
+        shell: pwsh
