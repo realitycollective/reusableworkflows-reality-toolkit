@@ -262,6 +262,17 @@ jobs:
 
           unity-editor '-createProject' $TempUnityProjectName -quit
 
+          if ( -not (Test-Path "$TempUnityProjectName") )
+          {
+            $ProjectPath = Get-Location
+            Write-Error "Editor failed to create project not Found $ProjectPath/$TempUnityProjectName"
+            exit 1
+          }
+          else {
+            $ProjectPath = Get-Location
+            echo "Editor project created at $ProjectPath/$TempUnityProjectName"
+          }
+
           $destinationPath = Join-Path $TempUnityProjectName 'packages'
           Move-Item -Path $UPMFolderName -Destination $destinationPath
 

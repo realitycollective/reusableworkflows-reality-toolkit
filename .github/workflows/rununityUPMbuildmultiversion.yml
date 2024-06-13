@@ -7,6 +7,10 @@ on:
         description: "json array of dependencies and their targets"
         required: false
         type: string
+      min-version:
+        description: "Minimum version of Unity to build"
+        required: false
+        type: string
 
 jobs:
   run_build:
@@ -71,6 +75,21 @@ jobs:
             build-target: iOS
           - os: macos
             unityVersion: 2023.2
+            build-target: StandaloneOSX
+          - os: windows
+            unityVersion: 6000.0
+            build-target: Android
+          - os: windows
+            unityVersion: 6000.0
+            build-target: StandaloneWindows64
+          - os: windows
+            unityVersion: 6000.0
+            build-target: WSAPlayer
+          - os: macos
+            unityVersion: 6000.0
+            build-target: iOS
+          - os: macos
+            unityVersion: 6000.0
             build-target: StandaloneOSX
     steps:
       - name: Script Version
@@ -313,6 +332,17 @@ jobs:
           $TempUnityProjectName = 'P'
 
           unity-editor '-createProject' $TempUnityProjectName -quit
+
+          if ( -not (Test-Path "$TempUnityProjectName") )
+          {
+            $ProjectPath = Get-Location
+            Write-Error "Editor failed to create project not Found $ProjectPath/$TempUnityProjectName"
+            exit 1
+          }
+          else {
+            $ProjectPath = Get-Location
+            echo "Editor project created at $ProjectPath/$TempUnityProjectName"
+          }
 
           $destinationPath = Join-Path $TempUnityProjectName 'packages'
           Move-Item -Path $UPMFolderName -Destination $destinationPath
