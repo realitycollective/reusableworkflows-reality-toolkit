@@ -39,7 +39,7 @@ jobs:
             #. 'C:\Program Files\Unity Hub\Unity Hub.exe' -- --headless help
             function unity-hub 
             {
-              & $hubPath -- $args.Split(" ") | Out-String -NoNewline
+              & $hubPath | Out-String -NoNewline
             }            
           }
           elseif ( $global:PSVersionTable.OS.Contains("Darwin") ) 
@@ -50,7 +50,7 @@ jobs:
             # /Applications/Unity\ Hub.app/Contents/MacOS/Unity\ Hub -- --headless help
             function unity-hub 
             {
-              & $hubPath -- $args.Split(" ") | Out-String -NoNewline
+              & $hubPath | Out-String -NoNewline
             }            
           }
           elseif ( $global:PSVersionTable.OS.Contains("Linux") ) 
@@ -62,7 +62,7 @@ jobs:
             # xvfb-run --auto-servernum "$HOME/Unity Hub/UnityHub.AppImage" --headless help
             function unity-hub 
             {
-              xvfb-run --auto-servernum "$hubPath" $args.Split(" ")
+              xvfb-run --auto-servernum "$hubPath"
             }            
           }
           echo "::endgroup::"
