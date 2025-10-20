@@ -3,8 +3,8 @@ name: Install the required Unity Editor on server
 on:
   workflow_call:
     inputs:
-      build-target:
-        description: "Platform the job should run under"
+      runs-on:
+        description: "Runner labels to determine the action runner to use."
         required: true
         type: string
       unityversion:
@@ -19,7 +19,7 @@ on:
 jobs:
   validate_unity_install:
     name: Validate Unity Hub and Editor install required for Project
-    runs-on: ${{ inputs.build-target }}
+    runs-on: ["${{ inputs.runs-on }}"]
     outputs:
       unityversion: ${{ steps.validate.outputs.unityversion }}
       editor-path: ${{ steps.validate.outputs.editor-path }}

@@ -3,6 +3,10 @@ name: Run Single-Version Unity UPM Build
 on:
   workflow_call:
     inputs:
+      runs-on:
+        description: "Runner labels to determine the action runner to use."
+        required: true
+        type: string
       unityVersion:
         description: "The version of Unity to validate on"
         required: true
@@ -15,7 +19,7 @@ on:
 jobs:
   run_build:
     name: Run Unity Build process
-    runs-on: ${{ matrix.os }}
+    runs-on: ["${{ inputs.runs-on }}", "${{ matrix.os }}"]
     strategy:
       matrix:
         include:

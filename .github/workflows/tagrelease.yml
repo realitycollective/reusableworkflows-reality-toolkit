@@ -3,9 +3,10 @@ name: Tag Release
 on:
   workflow_call:
     inputs:
-      build-host:
+      runs-on:
+        description: "Runner labels to determine the action runner to use."
         required: true
-        type: string    
+        type: string
       version:
         required: true
         type: string
@@ -20,7 +21,7 @@ concurrency:
 jobs:
   packageRelease:
     name: Package UPM Project and tag
-    runs-on: ${{ inputs.build-host }}
+    runs-on: ["${{ inputs.runs-on }}"]
     outputs:
       packageversion: ${{ steps.getpackageversion.outputs.packageversion }}    
     steps:

@@ -3,10 +3,10 @@ name: Validate the Unity Build environment on server
 on:
   workflow_call:
     inputs:
-      build-host:
-        description: "Platform the job should run under"
+      runs-on:
+        description: "Runner labels to determine the action runner to use."
         required: true
-        type: string    
+        type: string
       teststring:
         description: "The string output to validate"
         required: true
@@ -14,7 +14,7 @@ on:
 jobs:
   validate_unity_install:
     name: Validate Unity Hub and Editor install required for Project
-    runs-on: ${{ inputs.build-host }}
+    runs-on: ["${{ inputs.runs-on }}"]
     steps:
       - name: Script Version
         run: |

@@ -3,9 +3,10 @@ name: Refresh branch
 on:
   workflow_call:
     inputs:
-      build-host:
+      runs-on:
+        description: "Runner labels to determine the action runner to use."
         required: true
-        type: string    
+        type: string
       target-branch:
         required: true
         type: string
@@ -20,7 +21,7 @@ concurrency:
 jobs:
   packageRelease:
     name: Refresh ${{ inputs.target-branch }} branch from ${{ inputs.source-branch }} branch
-    runs-on: ${{ inputs.build-host }}
+    runs-on: ["${{ inputs.runs-on }}"]
     steps:
       - name: Script Version
         run: |

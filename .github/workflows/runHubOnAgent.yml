@@ -2,6 +2,11 @@ name: Run Unity Hub on Agent
 
 on:
   workflow_call:
+    inputs:
+      runs-on:
+        description: "Runner labels to determine the action runner to use."
+        required: true
+        type: string
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -9,7 +14,7 @@ on:
 jobs:
   run_build:
     name: Run Unity Build process
-    runs-on: ${{ matrix.os }}
+    runs-on: ["${{ inputs.runs-on }}", "${{ matrix.os }}"]
     strategy:
       matrix:
         include:

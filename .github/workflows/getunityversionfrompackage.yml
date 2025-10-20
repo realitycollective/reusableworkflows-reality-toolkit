@@ -3,7 +3,8 @@ name: Get the Unity version required from a UPM Package.json file
 on:
   workflow_call:
     inputs:
-      build-host:
+      runs-on:
+        description: "Runner labels to determine the action runner to use."
         required: true
         type: string
       version-file-path:
@@ -18,7 +19,7 @@ on:
 jobs:
   get_unity_version:
     name: Get required Unity version from UPM Package
-    runs-on: ${{ inputs.build-host }}
+    runs-on: ["${{ inputs.runs-on }}"]
     outputs:
       upmunityversion: ${{ steps.getVersion.outputs.packageunityversion }}
     steps:

@@ -3,6 +3,10 @@ name: Run Single-Version Unity Build
 on:
   workflow_call:
     inputs:
+      runs-on:
+        description: "Runner labels to determine the action runner to use."
+        required: true
+        type: string
       targetPlatform:
         description: "Sets the build target platform the Unity build is being made for"
         required: true
@@ -23,7 +27,7 @@ on:
 jobs:
   run_build:
     name: Run Unity Build process
-    runs-on: self-hosted
+    runs-on: ["${{ inputs.runs-on }}"]
     steps:
       - name: Script Version
         run: |
