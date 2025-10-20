@@ -14,7 +14,7 @@ on:
 jobs:
   run_build:
     name: Run Unity Build process
-    runs-on: ${{ fromJSON(format('[{0},"{1}"]', join(fromJSON(inputs.runs-on), '","'), matrix.os)) }}
+    runs-on: ${{ format('[{0},"{1}"]', join(fromJSON(inputs.runs-on), '","'), matrix.os) }}
     strategy:
       matrix:
         include:
