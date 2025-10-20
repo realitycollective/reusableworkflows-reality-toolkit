@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       runs-on:
-        description: "Runner labels to determine the action runner to use."
+        description: "JSON array of runner labels to determine the action runner to use, e.g. '[\"ubuntu-latest\", \"self-hosted\"]'"
         required: true
         type: string
       unityversion:
@@ -22,7 +22,7 @@ on:
 jobs:
   validate_unity_install:
     name: Validate Unity Hub and Editor install required for Project
-    runs-on: ["${{ inputs.runs-on }}"]
+    runs-on: ${{ fromJSON(inputs.runs-on) }}
     outputs:
       unityversion: ${{ steps.validate.outputs.unityversion }}
       editorinstalled: ${{ steps.validate.outputs.editorinstalled }}

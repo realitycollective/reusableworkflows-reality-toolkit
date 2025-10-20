@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       runs-on:
-        description: "Runner labels to determine the action runner to use."
+        description: "JSON array of runner labels to determine the action runner to use, e.g. '[\"ubuntu-latest\", \"self-hosted\"]'"
         required: true
         type: string
       target-branch:
@@ -21,7 +21,7 @@ concurrency:
 jobs:
   packageRelease:
     name: Refresh ${{ inputs.target-branch }} branch from ${{ inputs.source-branch }} branch
-    runs-on: ["${{ inputs.runs-on }}"]
+    runs-on: ${{ fromJSON(inputs.runs-on) }}
     steps:
       - name: Script Version
         run: |

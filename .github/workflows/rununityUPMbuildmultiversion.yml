@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       runs-on:
-        description: "Runner labels to determine the action runner to use."
+        description: "JSON array of runner labels to determine the action runner to use, e.g. '[\"ubuntu-latest\", \"self-hosted\"]'"
         required: true
         type: string
       dependencies:
@@ -19,7 +19,7 @@ on:
 jobs:
   run_build:
     name: Run Unity Build process
-    runs-on: ["${{ inputs.runs-on }}", "${{ matrix.os }}"]
+    runs-on: ${{ fromJSON(format('[{0},"{1}"]', join(fromJSON(inputs.runs-on), '","'), matrix.os)) }}
     strategy:
       matrix:
         include:
