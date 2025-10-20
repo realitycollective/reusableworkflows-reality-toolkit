@@ -20,77 +20,23 @@ jobs:
       matrix:
         include:
           - os: windows
-            unityVersion: 2020.3
-            build-target: Android
-          - os: windows
-            unityVersion: 2020.3
-            build-target: StandaloneWindows64
-          - os: windows
-            unityVersion: 2020.3
-            build-target: WSAPlayer        
-          - os: windows
-            unityVersion: 2021.3
-            build-target: Android
-          - os: windows
-            unityVersion: 2021.3
-            build-target: StandaloneWindows64
-          - os: windows
-            unityVersion: 2021.3
-            build-target: WSAPlayer
-          - os: macos
-            unityVersion: 2021.3
-            build-target: iOS
-          - os: macos
-            unityVersion: 2021.3
-            build-target: StandaloneOSX
-          - os: windows
-            unityVersion: 2022.3
-            build-target: Android
-          - os: windows
-            unityVersion: 2022.3
-            build-target: StandaloneWindows64
-          - os: windows
-            unityVersion: 2022.3
-            build-target: WSAPlayer
-          - os: macos
-            unityVersion: 2022.3
-            build-target: iOS
-          - os: macos
-            unityVersion: 2022.3
-            build-target: StandaloneOSX
-          - os: macos
-            unityVersion: 2022.3
-            build-target: VisionOS
-          - os: windows
-            unityVersion: 2023.2
-            build-target: Android
-          - os: windows
-            unityVersion: 2023.2
-            build-target: StandaloneWindows64
-          - os: windows
-            unityVersion: 2023.2
-            build-target: WSAPlayer
-          - os: macos
-            unityVersion: 2023.2
-            build-target: iOS
-          - os: macos
-            unityVersion: 2023.2
-            build-target: StandaloneOSX
-          - os: windows
             unityVersion: 6000.0
             build-target: Android
           - os: windows
             unityVersion: 6000.0
             build-target: StandaloneWindows64
           - os: windows
-            unityVersion: 6000.0
-            build-target: WSAPlayer
-          - os: macos
-            unityVersion: 6000.0
-            build-target: iOS
-          - os: macos
-            unityVersion: 6000.0
-            build-target: StandaloneOSX
+            unityVersion: 6000.1
+            build-target: Android
+          - os: windows
+            unityVersion: 6000.1
+            build-target: StandaloneWindows64
+          - os: windows
+            unityVersion: 6000.2
+            build-target: Android
+          - os: windows
+            unityVersion: 6000.2
+            build-target: StandaloneWindows64
     steps:
       - name: Script Version
         run: |
