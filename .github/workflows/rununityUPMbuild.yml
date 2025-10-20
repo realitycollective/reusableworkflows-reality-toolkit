@@ -23,18 +23,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: macos
-            build-target: iOS
-          - os: macos
-            build-target: StandaloneOSX
-          - os: macos
-            build-target: VisionOS
           - os: windows
             build-target: Android
           - os: windows
             build-target: StandaloneWindows64
-          - os: windows
-            build-target: WSAPlayer        
     steps:
       - name: Script Version
         run: |
